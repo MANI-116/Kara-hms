@@ -3,3 +3,4 @@ node_modules/
 
 #builders
 build-render/
+dist-electron/

@@ -13,7 +13,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <Hospital className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold">MediCare Hospital</h1>
+              <h1 className="text-2xl font-bold">Jamal Hospital</h1>
               <p className="text-sm text-muted-foreground">Management System</p>
             </div>
           </div>

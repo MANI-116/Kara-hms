@@ -33,5 +33,6 @@ const PatientSchema = z.object({
 
 ipcMain.handle('patient:register', (_, payload) => {
   const parsed = PatientSchema.parse(payload);
+  console.log("parsed:",parsed);
   return { ok: true, patient: { ...parsed, id: 'P' + Date.now() } };
 });

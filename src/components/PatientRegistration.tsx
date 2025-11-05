@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,  } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -8,6 +8,7 @@ import { Textarea } from './ui/textarea';
 import { UserPlus, Search } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
+
 interface BasePatient {
   id: string;
   fullName: string;
@@ -15,12 +16,8 @@ interface BasePatient {
   gender: 'Male' | 'Female' | 'Other';
   contact: string;
   address: string;
-  emergencyContact: string;
-  emergencyRelation: string;
-  registrationDate: string;
   bloodGroup?: string;
-  allergies?: string;
-  chronicConditions?: string;
+
 }
 
 interface PatientRegistrationProps {
@@ -38,11 +35,8 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
     gender: '',
     contact: '',
     address: '',
-    emergencyContact: '',
-    emergencyRelation: '',
-    bloodGroup: '',
-    allergies: '',
-    chronicConditions: ''
+    bloodGroup: ''
+    
   });
 
   const filteredPatients = patients.filter(patient =>
@@ -73,12 +67,9 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
       age: parseInt(formData.age),
       gender: formData.gender as 'Male' | 'Female' | 'Other',
       contact: formData.contact,
-      address: formData.address,
-      emergencyContact: formData.emergencyContact,
-      emergencyRelation: formData.emergencyRelation,
-      bloodGroup: formData.bloodGroup,
-      allergies: formData.allergies,
-      chronicConditions: formData.chronicConditions
+      address: formData.address, 
+      bloodGroup: formData.bloodGroup
+     
     });
 
     // Reset form
@@ -87,12 +78,8 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
       age: '',
       gender: '',
       contact: '',
-      address: '',
-      emergencyContact: '',
-      emergencyRelation: '',
       bloodGroup: '',
-      allergies: '',
-      chronicConditions: ''
+      address:''
     });
     setIsNewPatient(false);
     toast.success('Patient registered successfully');
@@ -259,7 +246,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                   </Select>
                 </div>
 
-                <div>
+                {/* <div>
                   <Label htmlFor="emergencyContact">Emergency Contact</Label>
                   <Input
                     id="emergencyContact"
@@ -267,9 +254,9 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                     onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                     placeholder="Emergency contact number"
                   />
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <Label htmlFor="emergencyRelation">Emergency Contact Relation</Label>
                   <Input
                     id="emergencyRelation"
@@ -277,7 +264,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                     onChange={(e) => setFormData({ ...formData, emergencyRelation: e.target.value })}
                     placeholder="Relationship"
                   />
-                </div>
+                </div> */}
               </div>
 
               <div>
@@ -291,7 +278,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <Label htmlFor="allergies">Known Allergies</Label>
                 <Textarea
                   id="allergies"
@@ -300,9 +287,9 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                   placeholder="List any known allergies"
                   rows={2}
                 />
-              </div>
+              </div> */}
 
-              <div>
+              {/* <div>
                 <Label htmlFor="chronicConditions">Chronic Conditions</Label>
                 <Textarea
                   id="chronicConditions"
@@ -311,7 +298,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                   placeholder="List any chronic medical conditions"
                   rows={2}
                 />
-              </div>
+              </div> */}
 
               <div className="flex gap-3 pt-4">
                 <Button type="submit" className="flex-1">

@@ -6,6 +6,9 @@ import { ConsultationManagement } from './ConsultationManagement';
 import { AdmissionManagement } from './AdmissionManagement';
 import { PatientList } from './PatientList';
 import { UserPlus, FileText, Stethoscope, Bed, Users } from 'lucide-react';
+import { registerPatient } from '../lib/ipc';
+import { toast } from 'sonner';
+
 
 interface BasePatient {
   id: string;
@@ -14,12 +17,9 @@ interface BasePatient {
   gender: 'Male' | 'Female' | 'Other';
   contact: string;
   address: string;
-  emergencyContact: string;
-  emergencyRelation: string;
   registrationDate: string;
   bloodGroup?: string;
-  allergies?: string;
-  chronicConditions?: string;
+
 }
 
 interface VitalSigns {
@@ -221,14 +221,30 @@ export function PatientManagement() {
     }
   ]);
 
-  const registerPatient = (patientData: Omit<BasePatient, 'id' | 'registrationDate'>) => {
-    const newPatient: BasePatient = {
-      ...patientData,
-      id: `P${String(basePatients.length + 1).padStart(3, '0')}`,
-      registrationDate: new Date().toISOString().split('T')[0]
-    };
-    setBasePatients([...basePatients, newPatient]);
-  };
+  // const registerPatient = (patientData: Omit<BasePatient, 'id' | 'registrationDate'>) => {
+  //   const newPatient: BasePatient = {
+  //     ...patientData,
+  //     id: `P${String(basePatients.length + 1).padStart(3, '0')}`,
+  //     registrationDate: new Date().toISOString().split('T')[0]
+  //   };
+  //   setBasePatients([...basePatients, newPatient]);
+  // };
+  const handleRegisterPatient = async (patientData) => {
+    console.log(patientData)
+  try {
+    const res = await registerPatient(patientData);
+    console.log("response-",res);
+    if (res.ok && res.patient) {
+      setBasePatients((prev) => [res.patient, ...prev]);
+      toast.success(`Registered: ${res.patient.fullName}`);
+    } else {
+      toast.error('Validation failed');
+    }
+  } catch (e) {
+    toast.error('IPC communication failed');
+  }
+};
+
 
   const selectExistingPatient = (patient: BasePatient) => {
     setSelectedPatient(patient);
@@ -299,11 +315,11 @@ export function PatientManagement() {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="registration">
             <UserPlus className="mr-2 h-4 w-4" />
-            Registration
+            JIMS OP
           </TabsTrigger>
           <TabsTrigger value="ip-creation">
             <FileText className="mr-2 h-4 w-4" />
-            IP Creation
+            JAMAL OP
           </TabsTrigger>
           <TabsTrigger value="consultation">
             <Stethoscope className="mr-2 h-4 w-4" />
@@ -322,7 +338,7 @@ export function PatientManagement() {
         <TabsContent value="registration">
           <PatientRegistration
             patients={basePatients}
-            onRegisterPatient={registerPatient}
+            onRegisterPatient={handleRegisterPatient}
             onSelectExistingPatient={selectExistingPatient}
           />
         </TabsContent>

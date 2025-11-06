@@ -1,9 +1,15 @@
 // src/lib/ipc.ts
 export async function registerPatient(payload: any) {
-  if (typeof window === 'undefined' || !window.api || !window.api.registerPatient) {
-    throw new Error('IPC bridge not available');
-  }
+  if (!window?.api?.registerPatient) throw new Error('IPC not available');
+  return window.api.registerPatient(payload);
+}
 
-  const result = await window.api.registerPatient(payload);
-  return result;
+export async function getPatients() {
+  if (!window?.api?.getPatients) throw new Error('IPC not available');
+  return window.api.getPatients();
+}
+
+export async function searchPatients(term: string) {
+  if (!window?.api?.searchPatients) throw new Error('IPC not available');
+  return window.api.searchPatients(term);
 }

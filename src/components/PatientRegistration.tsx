@@ -6,25 +6,8 @@ import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { UserPlus, Search } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
-
-
-interface BasePatient {
-  id: string;
-  fullName: string;
-  age: number;
-  gender: 'Male' | 'Female' | 'Other';
-  contact: string;
-  address: string;
-  bloodGroup?: string;
-
-}
-
-interface PatientRegistrationProps {
-  patients: BasePatient[];
-  onRegisterPatient: (patient: Omit<BasePatient, 'id' | 'registrationDate'>) => void;
-  onSelectExistingPatient: (patient: BasePatient) => void;
-}
+import { toast } from 'sonner';
+import {BasePatient, PatientRegistrationProps } from "../types/patient"
 
 export function PatientRegistration({ patients, onRegisterPatient, onSelectExistingPatient }: PatientRegistrationProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -204,7 +187,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
 
                 <div>
                   <Label htmlFor="gender">Gender *</Label>
-                  <Select value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                  <Select value={formData.gender} onValueChange={(value:string) => setFormData({ ...formData, gender: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
@@ -229,7 +212,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
 
                 <div>
                   <Label htmlFor="bloodGroup">Blood Group</Label>
-                  <Select value={formData.bloodGroup} onValueChange={(value) => setFormData({ ...formData, bloodGroup: value })}>
+                  <Select value={formData.bloodGroup} onValueChange={(value:string) => setFormData({ ...formData, bloodGroup: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select blood group" />
                     </SelectTrigger>

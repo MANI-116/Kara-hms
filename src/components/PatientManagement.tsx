@@ -206,13 +206,13 @@ const createIPRecord = async (ipData: any) => {
           />
         </TabsContent>
 
-        <TabsContent value="patients">
+        {/* <TabsContent value="patients">
           <PatientList 
             patients={patients} 
             onUpdatePatient={updatePatient}
             onRemovePatient={removePatient}
           />
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );

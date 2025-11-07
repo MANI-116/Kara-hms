@@ -1,13 +1,12 @@
-import React from "react";
 import {
   Page,
   Text,
   View,
   Document,
-  StyleSheet
+  StyleSheet, renderToStream
 } from "@react-pdf/renderer";
 
-// ✅ Use built-in Helvetica font (no remote URLs, no errors)
+
 const fontFamily = "Helvetica";
 
 const styles = StyleSheet.create({
@@ -43,21 +42,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     fontSize: 11,
     marginVertical: 2,
+    lineHeight:1
   },
   fieldLabel: {
     width: "40%",
     color: "#374151",
     fontWeight: "bold",
+    lineHeight:1
   },
   fieldValue: {
     width: "60%",
     color: "#111827",
+    lineHeight:1
   },
   vitalBox: {
     marginTop: 8,
     padding: 6,
     backgroundColor: "#f1f5f9",
     borderRadius: 5,
+    
   },
   footer: {
     marginTop: 25,
@@ -133,7 +136,7 @@ export const IPPDFDocument = ({
       </View>
       <View style={styles.fieldRow}>
         <Text style={styles.fieldLabel}>Valid Until:</Text>
-        <Text style={styles.fieldValue}>{ipRecord?.validUntil}</Text>
+        <Text style={styles.fieldValue}>{new Date(ipRecord?.validUntil).toISOString().split("T")[0]}</Text>
       </View>
 
       {/* Chief Complaint */}

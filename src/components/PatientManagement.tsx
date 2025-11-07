@@ -58,16 +58,40 @@ useEffect(() => {
     setSelectedPatient(patient);
   };
 
-  const createIPRecord = (ipData: any) => {
+ 
+
+const loadIPs = async () => {
+  const res = await window.api.getIPs();
+  console.log("All IP records:", res.ipPatients);
+};
+const createIPRecord = async (ipData: any) => {
+  if (!selectedPatient) {
+    toast.error("Please select a patient from OP first");
+    return;
+  }
+
+  // Send to backend (it will handle IP ID generation)
+  const res = await window.api.createIP({
+    opId: selectedPatient.id,
+    ...ipData
+  });
+
+  if (res.ok && res.ip) {
     const newIP = {
-      ...ipData,
-      id: `IP${Date.now()}`,
-      ipNumber: `IP${Date.now().toString().slice(-6)}`,
-      status: 'Active'
+      ...res.ip,
+      id: res.ip.ipId,             // maintain consistency for UI lists
+      ipNumber: res.ip.ipNumber || res.ip.ipId,
+      status: res.ip.status || 'Active'
     };
+
     setIpRecords(prev => [newIP, ...prev]);
+    toast.success(`IP Created for ${selectedPatient.fullName}`);
     setSelectedPatient(null);
-  };
+  } else {
+    toast.error("Failed to create IP record");
+  }
+};
+
   
 
 

@@ -5,34 +5,21 @@ import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { Badge } from './ui/badge';
-import { FileText, Download, Clock, User } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
-
-interface BasePatient {
-  id: string;
-  fullName: string;
-  age: number;
-  gender: 'Male' | 'Female' | 'Other';
-  contact: string;
-  address: string;
-  emergencyContact: string;
-  emergencyRelation: string;
-  registrationDate: string;
-  bloodGroup?: string;
-  allergies?: string;
-  chronicConditions?: string;
-}
+import { Clock, User, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { BasePatient } from "../types/patient";
+import { pdf } from "@react-pdf/renderer";
+import { IPPDFDocument } from "./IPPDFDocument";
 
 interface VitalSigns {
-  weight: number; // kg
-  height: number; // cm
-  temperature: number; // °C
+  weight: number;
+  height: number;
+  temperature: number;
   bloodPressureSystolic: number;
   bloodPressureDiastolic: number;
-  pulse: number; // bpm
-  respiratoryRate: number; // per minute
-  oxygenSaturation: number; // %
+  pulse: number;
+  respiratoryRate: number;
+  oxygenSaturation: number;
 }
 
 interface IPRecord {
@@ -46,7 +33,7 @@ interface IPRecord {
   currentMedications: string;
   vitalSigns: VitalSigns;
   status: 'Active' | 'Completed' | 'Admitted' | 'Discharged';
-  validUntil: string; // Date when IP expires
+  validUntil: string;
   priority: 'Low' | 'Medium' | 'High' | 'Emergency';
   referredBy?: string;
   department: string;
@@ -67,7 +54,6 @@ export function IPCreation({ selectedPatient, onCreateIP, onClearSelection }: IP
     department: '',
     priority: 'Medium',
     referredBy: '',
-    // Vital Signs
     weight: '',
     height: '',
     temperature: '',
@@ -78,171 +64,117 @@ export function IPCreation({ selectedPatient, onCreateIP, onClearSelection }: IP
     oxygenSaturation: ''
   });
 
+  const [generatedIP, setGeneratedIP] = useState<any | null>(null);
+
   const departments = [
-    'Emergency',
-    'General Medicine',
-    'Cardiology',
-    'Neurology',
-    'Orthopedics',
-    'Pediatrics',
-    'Gynecology',
-    'Surgery',
-    'Dermatology',
-    'Psychiatry',
-    'Ophthalmology',
-    'ENT'
+    'Emergency', 'General Medicine', 'Cardiology', 'Neurology',
+    'Orthopedics', 'Pediatrics', 'Gynecology', 'Surgery',
+    'Dermatology', 'Psychiatry', 'Ophthalmology', 'ENT'
   ];
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const generatePDF = (ipRecord: any) => {
-    // In a real application, this would generate a proper PDF
-    // For now, we'll create a simple text representation
-    const pdfContent = `
-IP FORM - MEDICARE HOSPITAL
-================================
+  if (!selectedPatient) {
+    toast.error('Please select a patient first');
+    return;
+  }
 
-Patient Information:
-- Name: ${selectedPatient?.fullName}
-- Patient ID: ${selectedPatient?.id}
-- Age: ${selectedPatient?.age} years
-- Gender: ${selectedPatient?.gender}
-- Blood Group: ${selectedPatient?.bloodGroup || 'Not specified'}
-- Contact: ${selectedPatient?.contact}
+  const requiredFields = [
+    'reasonForVisit', 'chiefComplaint', 'department',
+    'weight', 'temperature', 'bloodPressureSystolic', 'bloodPressureDiastolic', 'pulse'
+  ];
+  for (const field of requiredFields) {
+    if (!formData[field as keyof typeof formData]) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+  }
 
-IP Details:
-- IP Number: ${ipRecord.ipNumber}
-- Visit Date: ${ipRecord.visitDate}
-- Visit Time: ${ipRecord.visitTime}
-- Department: ${ipRecord.department}
-- Priority: ${ipRecord.priority}
-- Valid Until: ${ipRecord.validUntil}
+  const vitalSigns: VitalSigns = {
+    weight: parseFloat(formData.weight),
+    height: parseFloat(formData.height) || 0,
+    temperature: parseFloat(formData.temperature),
+    bloodPressureSystolic: parseInt(formData.bloodPressureSystolic),
+    bloodPressureDiastolic: parseInt(formData.bloodPressureDiastolic),
+    pulse: parseInt(formData.pulse),
+    respiratoryRate: parseInt(formData.respiratoryRate) || 0,
+    oxygenSaturation: parseFloat(formData.oxygenSaturation) || 0
+  };
 
-Chief Complaint:
-${ipRecord.chiefComplaint}
+  const now = new Date();
+  const validUntil = new Date(now);
+  validUntil.setHours(validUntil.getHours() + 24);
 
-Reason for Visit:
-${ipRecord.reasonForVisit}
+  const ipRecord = {
+    patientId: selectedPatient.id,
+    visitDate: now.toISOString().split('T')[0],
+    visitTime: now.toTimeString().split(' ')[0],
+    reasonForVisit: formData.reasonForVisit,
+    chiefComplaint: formData.chiefComplaint,
+    currentMedications: formData.currentMedications,
+    vitalSigns,
+    validUntil: validUntil.toISOString(),
+    priority: formData.priority as 'Low' | 'Medium' | 'High' | 'Emergency',
+    referredBy: formData.referredBy,
+    department: formData.department
+  };
 
-Vital Signs:
-- Weight: ${ipRecord.vitalSigns.weight} kg
-- Height: ${ipRecord.vitalSigns.height} cm
-- Temperature: ${ipRecord.vitalSigns.temperature}°C
-- Blood Pressure: ${ipRecord.vitalSigns.bloodPressureSystolic}/${ipRecord.vitalSigns.bloodPressureDiastolic} mmHg
-- Pulse: ${ipRecord.vitalSigns.pulse} bpm
-- Respiratory Rate: ${ipRecord.vitalSigns.respiratoryRate}/min
-- Oxygen Saturation: ${ipRecord.vitalSigns.oxygenSaturation}%
+  // Send to backend first
+  onCreateIP(ipRecord);
 
-Current Medications:
-${ipRecord.currentMedications || 'None reported'}
+  // Simulate backend-generated IP number for naming
+  const ipNumber = `IP${Date.now().toString().slice(-6)}`;
+  const fullRecord = { ...ipRecord, ipNumber };
 
-Allergies:
-${selectedPatient?.allergies || 'None reported'}
+  // ✅ Auto-generate and download PDF
+  try {
+    const blob = await pdf(
+      <IPPDFDocument ipRecord={fullRecord} selectedPatient={selectedPatient} />
+    ).toBlob();
 
-Chronic Conditions:
-${selectedPatient?.chronicConditions || 'None reported'}
-
-Generated on: ${new Date().toLocaleString()}
-    `;
-
-    // Create and download the "PDF" (as text file for demo)
-    const blob = new Blob([pdfContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `IP_${ipRecord.ipNumber}_${selectedPatient?.fullName.replace(/\s+/g, '_')}.txt`;
+    a.download = `IP_${ipNumber}_${selectedPatient.fullName.replace(/\s+/g, '_')}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    toast.success('IP record created & PDF downloaded');
+  } catch (err) {
+    console.error('PDF generation failed:', err);
+    toast.error('Error generating PDF');
+  }
 
-    if (!selectedPatient) {
-      toast.error('Please select a patient first');
-      return;
-    }
+  // Reset form
+  setFormData({
+    reasonForVisit: '',
+    chiefComplaint: '',
+    currentMedications: '',
+    department: '',
+    priority: 'Medium',
+    referredBy: '',
+    weight: '',
+    height: '',
+    temperature: '',
+    bloodPressureSystolic: '',
+    bloodPressureDiastolic: '',
+    pulse: '',
+    respiratoryRate: '',
+    oxygenSaturation: ''
+  });
+};
 
-    // Validate required fields
-    const requiredFields = [
-      'reasonForVisit', 'chiefComplaint', 'department',
-      'weight', 'temperature', 'bloodPressureSystolic', 'bloodPressureDiastolic', 'pulse'
-    ];
-
-    for (const field of requiredFields) {
-      if (!formData[field as keyof typeof formData]) {
-        toast.error('Please fill all required fields');
-        return;
-      }
-    }
-
-    const vitalSigns: VitalSigns = {
-      weight: parseFloat(formData.weight),
-      height: parseFloat(formData.height) || 0,
-      temperature: parseFloat(formData.temperature),
-      bloodPressureSystolic: parseInt(formData.bloodPressureSystolic),
-      bloodPressureDiastolic: parseInt(formData.bloodPressureDiastolic),
-      pulse: parseInt(formData.pulse),
-      respiratoryRate: parseInt(formData.respiratoryRate) || 0,
-      oxygenSaturation: parseFloat(formData.oxygenSaturation) || 0
-    };
-
-    const now = new Date();
-    const validUntil = new Date(now);
-    validUntil.setHours(validUntil.getHours() + 24); // Valid for 24 hours
-
-    const ipRecord = {
-      patientId: selectedPatient.id,
-      visitDate: now.toISOString().split('T')[0],
-      visitTime: now.toTimeString().split(' ')[0],
-      reasonForVisit: formData.reasonForVisit,
-      chiefComplaint: formData.chiefComplaint,
-      currentMedications: formData.currentMedications,
-      vitalSigns,
-      validUntil: validUntil.toISOString(),
-      priority: formData.priority as 'Low' | 'Medium' | 'High' | 'Emergency',
-      referredBy: formData.referredBy,
-      department: formData.department
-    };
-
-    onCreateIP(ipRecord);
-
-    // Generate IP number for PDF (this would be done in the parent component in real app)
-    const mockIPRecord = {
-      ...ipRecord,
-      ipNumber: `IP${Date.now().toString().slice(-6)}`
-    };
-
-    // Generate and download PDF
-    generatePDF(mockIPRecord);
-
-    // Reset form
-    setFormData({
-      reasonForVisit: '',
-      chiefComplaint: '',
-      currentMedications: '',
-      department: '',
-      priority: 'Medium',
-      referredBy: '',
-      weight: '',
-      height: '',
-      temperature: '',
-      bloodPressureSystolic: '',
-      bloodPressureDiastolic: '',
-      pulse: '',
-      respiratoryRate: '',
-      oxygenSaturation: ''
-    });
-
-    toast.success('IP record created and downloaded successfully');
-  };
 
   if (!selectedPatient) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
           <User className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-muted-foreground">Please select a patient to create an IP record</p>
+          <p className="text-muted-foreground">
+            Please select a patient to create an IP record
+          </p>
         </CardContent>
       </Card>
     );
@@ -297,7 +229,7 @@ Generated on: ${new Date().toLocaleString()}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <Download className="h-5 w-5" />
             Create IP Record
           </CardTitle>
         </CardHeader>
@@ -309,7 +241,10 @@ Generated on: ${new Date().toLocaleString()}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="department">Department *</Label>
-                  <Select value={formData.department} onValueChange={(value) => setFormData({ ...formData, department: value })}>
+                  <Select
+                    value={formData.department}
+                    onValueChange={(value: any) => setFormData({ ...formData, department: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
@@ -325,7 +260,10 @@ Generated on: ${new Date().toLocaleString()}
 
                 <div>
                   <Label htmlFor="priority">Priority</Label>
-                  <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value })}>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -389,113 +327,67 @@ Generated on: ${new Date().toLocaleString()}
             <div className="space-y-4">
               <h3 className="font-medium text-lg">Vital Signs</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="weight">Weight (kg) *</Label>
-                  <Input
-                    id="weight"
-                    type="number"
-                    step="0.1"
-                    value={formData.weight}
-                    onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
-                    placeholder="70.5"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="height">Height (cm)</Label>
-                  <Input
-                    id="height"
-                    type="number"
-                    value={formData.height}
-                    onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                    placeholder="170"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="temperature">Temperature (°C) *</Label>
-                  <Input
-                    id="temperature"
-                    type="number"
-                    step="0.1"
-                    value={formData.temperature}
-                    onChange={(e) => setFormData({ ...formData, temperature: e.target.value })}
-                    placeholder="98.6"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="pulse">Pulse (bpm) *</Label>
-                  <Input
-                    id="pulse"
-                    type="number"
-                    value={formData.pulse}
-                    onChange={(e) => setFormData({ ...formData, pulse: e.target.value })}
-                    placeholder="72"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="bloodPressureSystolic">BP Systolic *</Label>
-                  <Input
-                    id="bloodPressureSystolic"
-                    type="number"
-                    value={formData.bloodPressureSystolic}
-                    onChange={(e) => setFormData({ ...formData, bloodPressureSystolic: e.target.value })}
-                    placeholder="120"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="bloodPressureDiastolic">BP Diastolic *</Label>
-                  <Input
-                    id="bloodPressureDiastolic"
-                    type="number"
-                    value={formData.bloodPressureDiastolic}
-                    onChange={(e) => setFormData({ ...formData, bloodPressureDiastolic: e.target.value })}
-                    placeholder="80"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="respiratoryRate">Respiratory Rate</Label>
-                  <Input
-                    id="respiratoryRate"
-                    type="number"
-                    value={formData.respiratoryRate}
-                    onChange={(e) => setFormData({ ...formData, respiratoryRate: e.target.value })}
-                    placeholder="16"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="oxygenSaturation">O2 Saturation (%)</Label>
-                  <Input
-                    id="oxygenSaturation"
-                    type="number"
-                    step="0.1"
-                    value={formData.oxygenSaturation}
-                    onChange={(e) => setFormData({ ...formData, oxygenSaturation: e.target.value })}
-                    placeholder="98.0"
-                  />
-                </div>
+                {[
+                  { id: "weight", label: "Weight (kg) *", placeholder: "70.5" },
+                  { id: "height", label: "Height (cm)", placeholder: "170" },
+                  { id: "temperature", label: "Temperature (°C) *", placeholder: "98.6" },
+                  { id: "pulse", label: "Pulse (bpm) *", placeholder: "72" },
+                  { id: "bloodPressureSystolic", label: "BP Systolic *", placeholder: "120" },
+                  { id: "bloodPressureDiastolic", label: "BP Diastolic *", placeholder: "80" },
+                  { id: "respiratoryRate", label: "Respiratory Rate", placeholder: "16" },
+                  { id: "oxygenSaturation", label: "O₂ Saturation (%)", placeholder: "98.0" }
+                ].map(({ id, label, placeholder }) => (
+                  <div key={id}>
+                    <Label htmlFor={id}>{label}</Label>
+                    <Input
+                      id={id}
+                      type="number"
+                      step="0.1"
+                      value={(formData as any)[id]}
+                      onChange={(e) => setFormData({ ...formData, [id]: e.target.value })}
+                      placeholder={placeholder}
+                      required={label.includes("*")}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
             <div className="flex items-center gap-4 pt-4">
               <Button type="submit" className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                Create IP & Download PDF
+                Create IP
               </Button>
+
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>IP valid for 24 hours</span>
               </div>
+
+              {/* Show PDF Download button once IP is generated */}
+              {generatedIP && (
+                <PDFDownloadLink
+                  document={
+                    <IPPDFDocument
+                      ipRecord={generatedIP}
+                      selectedPatient={selectedPatient}
+                    />
+                  }
+                  fileName={`IP_${generatedIP.ipNumber}_${selectedPatient?.fullName.replace(/\s+/g, "_")}.pdf`}
+                >
+                  {({ loading }) => (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={loading}
+                      className="flex items-center gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      {loading ? "Preparing PDF..." : "Download PDF"}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              )}
             </div>
           </form>
         </CardContent>

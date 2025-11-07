@@ -10,7 +10,8 @@ import { Textarea } from './ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { DollarSign, Pill, X, Plus, FileText, Trash2 } from 'lucide-react';
 import { MedicalHistory } from './MedicalHistory';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
+import { Patient} from "../types/patient"
 
 interface Medication {
   id: string;
@@ -32,20 +33,20 @@ interface Bill {
   status: 'Paid' | 'Pending' | 'Overdue';
 }
 
-interface Patient {
-  id: string;
-  name: string;
-  age: number;
-  gender: 'Male' | 'Female';
-  contact: string;
-  admissionDate: string;
-  department: string;
-  doctor: string;
-  status: 'Admitted' | 'IP';
-  outstandingBill: number;
-  medications: Medication[];
-  billHistory: Bill[];
-}
+// interface Patient {
+//   id: string;
+//   name: string;
+//   age: number;
+//   gender: 'Male' | 'Female';
+//   contact: string;
+//   admissionDate: string;
+//   department: string;
+//   doctor: string;
+//   status: 'Admitted' | 'IP';
+//   outstandingBill: number;
+//   medications: Medication[];
+//   billHistory: Bill[];
+// }
 
 interface PatientListProps {
   patients: Patient[];

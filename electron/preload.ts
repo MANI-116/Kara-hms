@@ -18,6 +18,22 @@ contextBridge.exposeInMainWorld('api', {
   },
   getIPs: async () => {
     return ipcRenderer.invoke('ip:getAll');
+  },
+
+  /*----------AAccounts--------8*/
+  addExpense:async(payload:any) =>{
+    return ipcRenderer.invoke("accounts:addExpense",payload);
+  },
+  addIncome:async(payload:any)=>{
+    return ipcRenderer.invoke("accounts:addIncome",payload)
+  },
+  getIncomes:async ()=>{
+    return ipcRenderer.invoke("accounts:getIncomes")
+  },
+  getExpenses:async()=>{
+    return ipcRenderer.invoke("accounts:getExpenses");
   }
+
+
 });
 

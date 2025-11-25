@@ -3,6 +3,7 @@ import path from "path";
 import { initDatabase } from "./backend/db/db";
 import "./backend/ipcHandlers/patients";
 import "./backend/ipcHandlers/ip";
+import "./backend/ipcHandlers/accounts";
 
 const isDev = process.env.NODE_ENV === "development" || process.env.VITE_DEV_SERVER === "true";
 console.log("is dev mode:",isDev)

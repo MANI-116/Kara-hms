@@ -9,6 +9,135 @@ const SPREADSHEET_ID = "1IZBDdX_fOkFIyxt6te3cCr-Wmes0Jl0k89SZJy5N2vM";
 
 console.log("service account path-",SERVICE_ACCOUNT_PATH)
 
+async function getRows(payload:any){
+
+  try {
+    const credentials = getCredentials();
+
+    //authenticate
+    const auth = new google.auth.GoogleAuth({credentials,scopes:["https://www.googleapis.com/auth/spreadsheets"]})
+    const sheets = google.sheets({version:"v4",auth})
+    console.log("row called for ",payload.sheetName)
+   const res = await sheets.spreadsheets.values.get({
+     spreadsheetId:SPREADSHEET_ID,
+     range: `${payload.sheetName}!A2:F`})
+    
+     console.log(res.data.values)
+
+     return res.data.values;
+    
+  } catch (error) {
+    
+  }
+
+}
+
+async function appendToSheets(payload:any){
+  try {
+    //get the credentials
+    const credentials = getCredentials();
+
+    //authenticate
+    const auth = new google.auth.GoogleAuth({credentials,scopes:["https://www.googleapis.com/auth/spreadsheets"]})
+    const sheets = google.sheets({version:"v4",auth})
+
+   const res =  await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: payload.range, // your sheet name + range start
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values:payload.values }
+    });
+    console.log(res);
+
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+
+}
+
+
+function getCredentials(){
+  return JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH,"utf-8"));
+
+}
+
+export async function getExpenses(){
+  try {
+    
+     const res = await getRows({sheetName:"Expenses"})
+      console.log(res," from getIncomes in googleConfig")
+    const rows = res?.length;
+    const data = res?.map((row,index)=>{return {type:"expense",id:index,date:row[0],description:row[2],amount:row[3],category:row[1]}});
+   console.log(data,"length:",rows)
+    return data;
+   
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+export async function getIncomes(){
+  try {
+    const res = await getRows({sheetName:"Incomes"});
+    //transform
+    console.log(res," from getIncomes in googleConfig")
+    const rows = res?.length;
+    const data = res?.map((row,index)=>{return {type:"income",id:index,date:row[0],description:row[2],amount:row[3],category:row[1]}});
+    return data;
+
+  } catch (error) {
+    
+  }
+}
+
+export async function appendIncomeToSheets(income:any){
+  const values = [[
+      income.date,
+      income.category,
+      income.description,
+      income.amount
+  ]]
+
+  await appendToSheets({values,range:"Incomes!A2"})
+
+}
+
+export async function appendExpenseTOSheet(expense:any){
+
+  try {
+    //get the credentials
+    const credentials = getCredentials();
+
+    //authenticate
+    const auth = new google.auth.GoogleAuth({credentials,scopes:["https://www.googleapis.com/auth/spreadsheets"]})
+    const sheets = google.sheets({version:"v4",auth})
+    console.log(expense)
+    const values = [[
+      expense.date,
+      expense.category,
+      expense.description,
+      expense.amount
+    ]]
+    console.log(values)
+   const res =  await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: "Expenses!A2", // your sheet name + range start
+      valueInputOption: "USER_ENTERED",
+      requestBody: { values }
+    });
+    console.log(res);
+
+    //append
+  } catch (error) {
+    console.log(error);
+    
+  }
+
+}
+
 export async function appendPatientToSheet(patient: any) {
   try {
     const credentials = JSON.parse(fs.readFileSync(SERVICE_ACCOUNT_PATH, "utf8"));

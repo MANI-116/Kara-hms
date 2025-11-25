@@ -10,7 +10,7 @@ import { UserPlus, FileText, Stethoscope, Bed, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { registerPatient, searchPatients, getPatients } from '../lib/ipc';
-import { BasePatient, IPRecord, Patient,Medication,AdmissionDetails,ConsultationRecord, Bill} from "../types/patient"
+import { BasePatient, IPRecord, Patient,Medication,AdmissionDetails,ConsultationRecord, Bill, VitalSigns} from "../types/patient"
 
 
 
@@ -38,9 +38,10 @@ useEffect(() => {
     })();
   }, []);
 
-  const handleRegisterPatient = async (patientData: Omit<BasePatient, 'id'|'registrationDate'>) => {
+  const handleRegisterPatient = async (patientData: Omit<BasePatient, 'id'|'registrationDate'> & VitalSigns) => {
     try {
       // patientData must include registrationDate (YYYY-MM-DD). If frontend didn't send it, backend will set it.
+      console.log("sending patient date through ipc for op creation:",patientData);
       const res = await registerPatient(patientData);
       if (res.ok && res.patient) {
         setBasePatients(prev => [res.patient, ...prev]);

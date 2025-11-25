@@ -8,10 +8,11 @@ export interface BasePatient {
   registrationDate: string;
   bloodGroup?: string;
 
+
 }
 export interface PatientRegistrationProps {
   patients: BasePatient[];
-  onRegisterPatient: (patient: Omit<BasePatient, 'id' | 'registrationDate'>) => void;
+  onRegisterPatient: (patient: Omit<BasePatient, 'id' | 'registrationDate'> extends VitalSigns) => void;
   onSelectExistingPatient: (patient: BasePatient) => void;
 }
 export interface VitalSigns {

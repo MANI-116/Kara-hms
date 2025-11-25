@@ -18,9 +18,18 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
     gender: '',
     contact: '',
     address: '',
-    bloodGroup: ''
+    bloodGroup: '',
+    weight:'',
+    height:'',
+    temperature:'',
+    pulse:'',
+    bloodPressureSystolic:'',
+    bloodPressureDiastolic:'',
+    respiratoryRate:'',
+    oxygenSaturation:''
     
   });
+
 
   const filteredPatients = patients.filter(patient =>
     patient.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,33 +45,26 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
     }
 
     // Check if patient already exists
-    const existingPatient = patients.find(p => 
-      p.fullName.toLowerCase() === formData.fullName.toLowerCase()
-    );
+    
 
-    if (existingPatient) {
-      toast.error('Patient with this name already exists');
-      return;
-    }
-
-    onRegisterPatient({
-      fullName: formData.fullName,
-      age: parseInt(formData.age),
-      gender: formData.gender as 'Male' | 'Female' | 'Other',
-      contact: formData.contact,
-      address: formData.address, 
-      bloodGroup: formData.bloodGroup
-     
-    });
+    onRegisterPatient({...formData,age:parseInt(formData.age)});
 
     // Reset form
     setFormData({
-      fullName: '',
-      age: '',
-      gender: '',
-      contact: '',
-      bloodGroup: '',
-      address:''
+         fullName: '',
+    age: '',
+    gender: '',
+    contact: '',
+    address: '',
+    bloodGroup: '',
+    weight:'',
+    height:'',
+    temperature:'',
+    pulse:'',
+    bloodPressureSystolic:'',
+    bloodPressureDiastolic:'',
+    respiratoryRate:'',
+    oxygenSaturation:''
     });
     setIsNewPatient(false);
     toast.success('Patient registered successfully');
@@ -161,7 +163,11 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="date">
+                <Label>Date:{new Intl.DateTimeFormat("en-US").format(Date.now())}</Label>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                 <div>
                   <Label htmlFor="fullName">Full Name *</Label>
                   <Input
@@ -172,6 +178,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                     required
                   />
                 </div>
+
 
                 <div>
                   <Label htmlFor="age">Age *</Label>
@@ -228,6 +235,7 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                     </SelectContent>
                   </Select>
                 </div>
+                
 
                 {/* <div>
                   <Label htmlFor="emergencyContact">Emergency Contact</Label>
@@ -260,7 +268,34 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                   rows={2}
                 />
               </div>
-
+              <div className="space-y-4">
+              <h3 className="font-medium text-lg">Vital Signs</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { id: "weight", label: "Weight (kg) *", placeholder: "70.5" },
+                  { id: "height", label: "Height (cm)", placeholder: "170" },
+                  { id: "temperature", label: "Temperature (°C) *", placeholder: "98.6" },
+                  { id: "pulse", label: "Pulse (bpm) *", placeholder: "72" },
+                  { id: "bloodPressureSystolic", label: "BP Systolic *", placeholder: "120" },
+                  { id: "bloodPressureDiastolic", label: "BP Diastolic *", placeholder: "80" },
+                  { id: "respiratoryRate", label: "Respiratory Rate", placeholder: "16" },
+                  { id: "oxygenSaturation", label: "O₂ Saturation (%)", placeholder: "98.0" }
+                ].map(({ id, label, placeholder }) => (
+                  <div key={id}>
+                    <Label htmlFor={id}>{label}</Label>
+                    <Input
+                      id={id}
+                      type="number"
+                      step="0.1"
+                      value={(formData as any)[id]}
+                      onChange={(e) => setFormData({ ...formData, [id]: e.target.value })}
+                      placeholder={placeholder}
+                      
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
               {/* <div>
                 <Label htmlFor="allergies">Known Allergies</Label>
                 <Textarea

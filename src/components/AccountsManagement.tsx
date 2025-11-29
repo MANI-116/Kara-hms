@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { ExpenseIncome } from './ExpenseIncome';
 import { FinancialCharts } from './FinancialCharts';
 import { TrendingUp, TrendingDown, DollarSign, BarChart3 } from 'lucide-react';
-
+import { addExpense, addIncome, getExpenses, getIncomes} from "../lib/ipc"
 interface Transaction {
   id: string;
   type: 'expense' | 'income';
@@ -57,12 +57,43 @@ export function AccountsManagement() {
       date: '2024-09-15'
     }
   ]);
+  useEffect( ()=>{
+    (async()=>{
+      try {
+      let incomes = await getIncomes();
+      let expenses = await getExpenses();
+      incomes = incomes.data.map((r:Omit<Transaction,"amount">& {amount:string})=>{return {...r,amount:parseFloat(r.amount)}})
+      expenses = expenses.data.map((r:Omit<Transaction,"amount">& {amount:string})=>{return {...r,amount:parseFloat(r.amount)}})
+      let transactions = [...incomes,...expenses];
+      setTransactions(transactions)
+      console.log(incomes);
+      console.log(expenses);
+        
+      } catch (error) {
+        console.log(error)
+        
+      }
+    
+    })();
+    
 
-  const addTransaction = (transaction: Omit<Transaction, 'id'>) => {
+  },[])
+
+  const addTransaction = async(transaction: Omit<Transaction, 'id'>) => {
     const newTransaction: Transaction = {
       ...transaction,
       id: Date.now().toString()
     };
+    //invoking ipc to add to the sheets
+    try {
+      console.log("adding ",transaction.type," to the backend");
+      if(transaction.type ==="expense")
+      await addExpense(transaction);
+     if(transaction.type === "income")
+      await addIncome(transaction);
+    } catch (error) {
+      
+    }
     setTransactions([newTransaction, ...transactions]);
   };
 

@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { Badge } from './ui/badge';
 import { Plus, TrendingUp, TrendingDown } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
+
 
 interface Transaction {
   id: string;
@@ -175,7 +176,7 @@ export function ExpenseIncome({ onAddTransaction, transactions }: ExpenseIncomeP
                       <Label htmlFor="expense-category">Category *</Label>
                       <Select 
                         value={expenseForm.category} 
-                        onValueChange={(value) => setExpenseForm(prev => ({ ...prev, category: value }))}
+                        onValueChange={(value:any) => setExpenseForm(prev => ({ ...prev, category: value }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />
@@ -247,7 +248,7 @@ export function ExpenseIncome({ onAddTransaction, transactions }: ExpenseIncomeP
                       <Label htmlFor="income-category">Category *</Label>
                       <Select 
                         value={incomeForm.category} 
-                        onValueChange={(value) => setIncomeForm(prev => ({ ...prev, category: value }))}
+                        onValueChange={(value:any) => setIncomeForm(prev => ({ ...prev, category: value }))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select category" />

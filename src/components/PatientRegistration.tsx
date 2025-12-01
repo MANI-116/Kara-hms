@@ -8,6 +8,7 @@ import { Textarea } from './ui/textarea';
 import { UserPlus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import {BasePatient, PatientRegistrationProps } from "../types/patient"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 export function PatientRegistration({ patients, onRegisterPatient, onSelectExistingPatient }: PatientRegistrationProps) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -235,27 +236,6 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                     </SelectContent>
                   </Select>
                 </div>
-                
-
-                {/* <div>
-                  <Label htmlFor="emergencyContact">Emergency Contact</Label>
-                  <Input
-                    id="emergencyContact"
-                    value={formData.emergencyContact}
-                    onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-                    placeholder="Emergency contact number"
-                  />
-                </div> */}
-
-                {/* <div>
-                  <Label htmlFor="emergencyRelation">Emergency Contact Relation</Label>
-                  <Input
-                    id="emergencyRelation"
-                    value={formData.emergencyRelation}
-                    onChange={(e) => setFormData({ ...formData, emergencyRelation: e.target.value })}
-                    placeholder="Relationship"
-                  />
-                </div> */}
               </div>
 
               <div>
@@ -268,55 +248,6 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
                   rows={2}
                 />
               </div>
-              <div className="space-y-4">
-              <h3 className="font-medium text-lg">Vital Signs</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { id: "weight", label: "Weight (kg) *", placeholder: "70.5" },
-                  { id: "height", label: "Height (cm)", placeholder: "170" },
-                  { id: "temperature", label: "Temperature (°C) *", placeholder: "98.6" },
-                  { id: "pulse", label: "Pulse (bpm) *", placeholder: "72" },
-                  { id: "bloodPressureSystolic", label: "BP Systolic *", placeholder: "120" },
-                  { id: "bloodPressureDiastolic", label: "BP Diastolic *", placeholder: "80" },
-                  { id: "respiratoryRate", label: "Respiratory Rate", placeholder: "16" },
-                  { id: "oxygenSaturation", label: "O₂ Saturation (%)", placeholder: "98.0" }
-                ].map(({ id, label, placeholder }) => (
-                  <div key={id}>
-                    <Label htmlFor={id}>{label}</Label>
-                    <Input
-                      id={id}
-                      type="number"
-                      step="0.1"
-                      value={(formData as any)[id]}
-                      onChange={(e) => setFormData({ ...formData, [id]: e.target.value })}
-                      placeholder={placeholder}
-                      
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-              {/* <div>
-                <Label htmlFor="allergies">Known Allergies</Label>
-                <Textarea
-                  id="allergies"
-                  value={formData.allergies}
-                  onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                  placeholder="List any known allergies"
-                  rows={2}
-                />
-              </div> */}
-
-              {/* <div>
-                <Label htmlFor="chronicConditions">Chronic Conditions</Label>
-                <Textarea
-                  id="chronicConditions"
-                  value={formData.chronicConditions}
-                  onChange={(e) => setFormData({ ...formData, chronicConditions: e.target.value })}
-                  placeholder="List any chronic medical conditions"
-                  rows={2}
-                />
-              </div> */}
 
               <div className="flex gap-3 pt-4">
                 <Button type="submit" className="flex-1">
@@ -337,3 +268,5 @@ export function PatientRegistration({ patients, onRegisterPatient, onSelectExist
     </div>
   );
 }
+
+

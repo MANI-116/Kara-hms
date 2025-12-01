@@ -6,7 +6,7 @@ import { ConsultationManagement } from './ConsultationManagement';
 import { AdmissionManagement } from './AdmissionManagement';
 import { PatientList } from './PatientList';
 import { UserPlus, FileText, Stethoscope, Bed, Users } from 'lucide-react';
-
+import { OPCreation } from './OPCreattion';
 import { toast } from 'sonner';
 
 import { registerPatient, searchPatients, getPatients } from '../lib/ipc';
@@ -152,15 +152,11 @@ const createIPRecord = async (ipData: any) => {
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="registration">
             <UserPlus className="mr-2 h-4 w-4" />
-            REGISTERATION
+            Registration
           </TabsTrigger>
-          <TabsTrigger value="jims-op">
+          <TabsTrigger value="op">
             <UserPlus className="mr-2 h-4 w-4" />
-            JIMS OP
-          </TabsTrigger>
-          <TabsTrigger value="jamal-op">
-            <FileText className="mr-2 h-4 w-4" />
-            JAMAL OP
+            OP
           </TabsTrigger>
           <TabsTrigger value="ip-creation">
             <FileText className="mr-2 h-4 w-4" />
@@ -169,11 +165,11 @@ const createIPRecord = async (ipData: any) => {
           {/* <TabsTrigger value="consultation">
             <Stethoscope className="mr-2 h-4 w-4" />
             Consultation
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger value="admission">
             <Bed className="mr-2 h-4 w-4" />
             Admission
-          </TabsTrigger> */}
+          </TabsTrigger>
           <TabsTrigger value="patients">
             <Users className="mr-2 h-4 w-4" />
             Patient List
@@ -188,8 +184,8 @@ const createIPRecord = async (ipData: any) => {
           />
         </TabsContent>
 
-        <TabsContent value="jims-op">
-          <PatientRegistration
+        <TabsContent value="op">
+          <OPCreation
             patients={basePatients}
             onRegisterPatient={handleRegisterPatient}
             onSelectExistingPatient={selectExistingPatient}
@@ -197,13 +193,6 @@ const createIPRecord = async (ipData: any) => {
         </TabsContent>
         
 
-        <TabsContent value="jamal-op">
-          <IPCreation
-            selectedPatient={selectedPatient}
-            onCreateIP={createIPRecord}
-            onClearSelection={clearSelection}
-          />
-        </TabsContent>
           <TabsContent value="ip-creation">
           <IPCreation
             selectedPatient={selectedPatient}

@@ -5,6 +5,7 @@ import {
   Document,
   StyleSheet, renderToStream
 } from "@react-pdf/renderer";
+import { wrap } from "module";
 
 
 const fontFamily = "Helvetica";
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     padding: 6,
     backgroundColor: "#f1f5f9",
-    borderRadius: 5,
+    borderRadius: 5
     
   },
   footer: {
@@ -75,6 +76,7 @@ export const OPPDFDocument = ({
 }: {
   opRecord: any;
 }) => {
+  console.log("oprecord form pdf generation",opRecord);
 
     
     return (
@@ -113,19 +115,16 @@ export const OPPDFDocument = ({
         <Text style={styles.fieldValue}>{opRecord?.contact}</Text>
       </View>
 
-      {/* IP Details */}
+      {/* jamal OP Details */}
       <Text style={styles.section}>OutPatient Details</Text>
-      <View style={styles.fieldRow}>
-        <Text style={styles.fieldLabel}>Department:</Text>
-        <Text style={styles.fieldValue}>{opRecord?.department}</Text>
-      </View>
-      {/* <View style={styles.fieldRow}>
-        <Text style={styles.fieldLabel}>Priority:</Text>
-        <Text style={styles.fieldValue}>{opRecord?.priority}</Text>
-      </View> */}
+    
       <View style={styles.fieldRow}>
         <Text style={styles.fieldLabel}>Visit Date:</Text>
         <Text style={styles.fieldValue}>{opRecord.visitDate}</Text>
+      </View>
+      <View style={styles.fieldRow}>
+        <Text style={styles.fieldLabel }>Assigned Doctor:</Text>
+        <Text style={styles.fieldValue}>{opRecord.assignedDoctor}</Text>
       </View>
       <View style={styles.fieldRow}>
         <Text style={styles.fieldLabel}>Valid for 24hrs from the same day</Text>
@@ -154,26 +153,26 @@ export const OPPDFDocument = ({
       <Text style={styles.section}>Vital Signs</Text>
       <View style={styles.vitalBox}>
         <Text style={{ fontSize: 10 }}>
-          • Weight: {opRecord?.vitalSigns?.weight || "—"} kg
+          • Weight: {opRecord?.weight || "—"} kg
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • Height: {opRecord?.vitalSigns?.height || "—"} cm
+          • Height: {opRecord?.height || "—"} cm
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • Temperature: {opRecord?.vitalSigns?.temperature || "—"} °C
+          • Temperature: {opRecord?.temperature || "—"} °C
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • BP: {opRecord?.vitalSigns?.bloodPressureSystolic || "—"}/
-          {opRecord?.vitalSigns?.bloodPressureDiastolic || "—"} mmHg
+          • BP: {opRecord?.bloodPressureSystolic || "—"}/
+          {opRecord?.bloodPressureDiastolic || "—"} mmHg
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • Pulse: {opRecord?.vitalSigns?.pulse || "—"} bpm
+          • Pulse: {opRecord?.pulse || "—"} bpm
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • Resp. Rate: {opRecord?.vitalSigns?.respiratoryRate || "—"} /min
+          • Resp. Rate: {opRecord?.respiratoryRate || "—"} /min
         </Text>
         <Text style={{ fontSize: 10 }}>
-          • Oxygen Saturation: {opRecord?.vitalSigns?.oxygenSaturation || "—"} %
+          • Oxygen Saturation: {opRecord?.oxygenSaturation || "—"} %
         </Text>
       </View>
 

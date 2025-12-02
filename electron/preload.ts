@@ -12,6 +12,10 @@ contextBridge.exposeInMainWorld('api', {
     return ipcRenderer.invoke('patient:search', term);
   },
 
+  addJamalOP: async(opdata:any)=>{
+    return ipcRenderer.invoke("op:jamal",opdata);
+  },
+
   /* ---------- IP (Inpatient) ---------- */
   createIP: async (payload: any) => {
     return ipcRenderer.invoke('ip:create', payload);
@@ -33,6 +37,8 @@ contextBridge.exposeInMainWorld('api', {
   getExpenses:async()=>{
     return ipcRenderer.invoke("accounts:getExpenses");
   }
+
+
 
 
 });

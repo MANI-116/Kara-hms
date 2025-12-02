@@ -2,7 +2,7 @@ import { ipcMain } from "electron";
 import { db, initDatabase } from "../db/db";
 import { appendPatientToSheet } from "../../googleConfig";
 import Ajv from "ajv";
-import * as patientSchema from "../../../shared/patient.schema.json";
+import * as patientSchema from "../../../shared/jamalOP.schema.json";
 import { generatePatientId, getCurrentDayString } from "../utils/id";
 
 interface PatientInput {

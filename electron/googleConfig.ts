@@ -1,13 +1,83 @@
 import { google } from "googleapis";
 import path from "path";
 import fs from "fs";
+import { error } from "console";
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "../keys/google-service-account.json");
 
 // ⚠️ Put your real spreadsheet ID here (from the sheet URL)
 const SPREADSHEET_ID = "1IZBDdX_fOkFIyxt6te3cCr-Wmes0Jl0k89SZJy5N2vM";
 
-console.log("service account path-",SERVICE_ACCOUNT_PATH)
+console.log("service account path-",SERVICE_ACCOUNT_PATH);
+
+export const getNextOPID = async(sheetName:"JamalConfig" | "JimsConfig")=>{
+
+  //from config sheet get the last date;
+
+  try {
+    const credentials = getCredentials();
+  const auth = new google.auth.GoogleAuth({credentials,scopes:["https://www.googleapis.com/auth/spreadsheets"]});
+  const sheets = google.sheets({version:"v4",auth});
+  const res  = await sheets.spreadsheets.values.get({
+    spreadsheetId:SPREADSHEET_ID,
+    range:`${sheetName}!A:B`
+  })
+
+  const rows = res.data.values;
+  console.log("rows from config",rows);
+
+  if(rows){
+      const firstRow = rows[0];
+      console.log("firstRow-",firstRow)
+      const lastDate = firstRow[0];
+      let sno = (parseInt(firstRow[1])+1).toString();
+      console.log("sno-",sno,"sno.length-",sno.length);
+      const limit = sno.length;
+      for(let i =0; i < 4- limit;i++){
+        sno = "0"+sno;
+      }
+      const seq_num = sno;
+      console.log("new seq_no-",seq_num);
+      const today =  new Intl.DateTimeFormat("en-GB").format(Date.now());
+      console.log("lastdate",lastDate);
+      console.log("today",today);
+      if(today === lastDate){
+    const updateRes=     await sheets.spreadsheets.values.update({
+                                spreadsheetId: SPREADSHEET_ID,
+                                range: `${sheetName}!A1:B1`,
+                                valueInputOption: "RAW",
+                                requestBody: {
+                                  values: [[today, seq_num.toString()]],
+                                },
+                              });
+      console.log("updateres-",updateRes.data);
+        return { ok:true,data:seq_num.toString()};
+      }else{
+         const updateRes=     await sheets.spreadsheets.values.update({
+                                spreadsheetId: SPREADSHEET_ID,
+                                range: `${sheetName}!A1:B1`,
+                                valueInputOption: "RAW",
+                                requestBody: {
+                                  values: [[today,1]],
+                                },
+                              });
+      console.log("updateres-",updateRes);
+        return { ok:true,data:1};
+      }
+
+  }
+
+    
+  } catch (error) {
+    console.log("error from getConfig-",error);
+    return {ok:false,data:-1}
+    
+  }
+  
+
+
+  
+}
 
 async function getRows(payload:any){
 
@@ -47,11 +117,13 @@ async function appendToSheets(payload:any){
       valueInputOption: "USER_ENTERED",
       requestBody: { values:payload.values }
     });
-    console.log(res);
+    console.log(res.data);
+    return { ok:true,data:res}
 
     
   } catch (error) {
-    console.log(error)
+    console.log(error);
+    return { ok:false,data:error};
     
   }
 
@@ -91,6 +163,41 @@ export async function getIncomes(){
   } catch (error) {
     
   }
+}
+
+
+//append OP to sheets dynamically based on the op name
+export async function appendJamalOP(opPayload:any){
+
+   const values = [
+      [
+        false,
+        opPayload.id,
+        opPayload.fullName,
+        opPayload.age,
+        opPayload.gender,
+        opPayload.contact,
+        opPayload.assignDoctor,
+        opPayload.address || "",
+        opPayload.registrationDate,
+        opPayload.bloodGroup || "",
+        opPayload.weight||"",
+        opPayload.height||"",
+        opPayload.temperature||"",
+        opPayload.pulse||"",
+        opPayload.bloodPresuureDiastolic||"",
+        opPayload.bloodPressureSystolic,
+        opPayload.respiratoryRate||"",
+        opPayload.oxygenSaturation||""
+      ]
+    ];
+
+    const res = await appendToSheets({values,range:"JamalOPs!A2"})
+ 
+
+    return res;
+
+   
 }
 
 export async function appendIncomeToSheets(income:any){
@@ -159,6 +266,7 @@ export async function appendPatientToSheet(patient: any) {
         patient.age,
         patient.gender,
         patient.contact,
+        patient.assignDoctor,
         patient.address || "",
         patient.registrationDate,
         patient.bloodGroup || "",

@@ -11,18 +11,19 @@ import { registerPatient} from "../lib/ipc"
 import {BasePatient, PatientRegistrationProps } from "../types/patient"
 import { pdf } from "@react-pdf/renderer"
 import { OPPDFDocument} from "./OPPDFTemplate"
+import { addJamalOP } from "../lib/ipc"
 
 const createOP = async (opData:any):Promise<{ok:boolean,data:any}>=>{
     try {
-            const result = await registerPatient(opData);
+            const result = await addJamalOP(opData);
             console.log("result:",result);
-            if(result.ok) {return {ok:true,data:result?.patient} }else{
-                return {ok:false,data:"errorOccured"};
+            if(result.ok) {return {ok:true,data:result?.data} }else{
+                return new Promise((res,rej)=>res({ok:false,data:"errorOccured"}));
             }
         
     } catch (error) {
         console.error;
-        return {ok:false,data:error};
+        return new Promise((res,rej)=>rej({ok:false,data:error}));
         
     }
     
@@ -90,9 +91,9 @@ export function JamalOP() {
                 ];
 
   const doctorsList = [
-    {name:"bhasha", id:1},
+    {name:"bhasha", id:0},
     {name:"jessi", id:1},
-    {name:"chandra", id:1}
+    {name:"chandra", id:2}
   ]
 
 
@@ -133,7 +134,7 @@ export function JamalOP() {
           if(res.ok){
             //create the pdf
              
-             toast.success('Op cerated successfully');
+             toast.success('Op created successfully');
              const downloadRes = await downloadPdf({...res.data,visitDate:new Intl.DateTimeFormat("en-US").format(Date.now())});
              console.log(downloadRes);
 
@@ -185,7 +186,7 @@ export function JamalOP() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="date">
-                <Label>Date:{new Intl.DateTimeFormat("en-US").format(Date.now())}</Label>
+                <Label>Date:{new Intl.DateTimeFormat("en-GB").format(Date.now())}</Label>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -259,12 +260,12 @@ export function JamalOP() {
 
                 <div>
                   <Label>Assign Doctor</Label>
-                  <Select onValueChange={(value:string)=>setFormData({...formData,assignDoctor:value})}>
+                  <Select value={formData.assignDoctor} onValueChange={(value:string)=>setFormData({...formData,assignDoctor:value})}>
                     <SelectTrigger>
                       <SelectValue placeholder="select Doc"></SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      { doctorsList.map((doc)=><SelectItem key={doc.id} value={doc.name}>{doc.name}</SelectItem>)}
+                      { doctorsList.map((doc,index)=><SelectItem key={index} value={doc.name}>{doc.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
 

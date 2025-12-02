@@ -1,4 +1,4 @@
-// src/lib/ipc.ts
+//registering patients
 export async function registerPatient(payload: any) {
   if (!window?.api?.registerPatient) throw new Error('IPC not available');
   return window.api.registerPatient(payload);
@@ -13,6 +13,8 @@ export async function searchPatients(term: string) {
   if (!window?.api?.searchPatients) throw new Error('IPC not available');
   return window.api.searchPatients(term);
 }
+
+//Accouunts
 
 export async function addExpense(payload:any){
   if(!window?.api?.addExpense) throw new Error("add expense is not available");
@@ -38,4 +40,11 @@ export async function getExpenses(){
   if(!window?.api?.getExpenses) throw new Error("did not find hanlder for getExpenses");
 
   return window.api.getExpenses();
+}
+
+//OP
+export function addJamalOP(payload:any){
+  if(!window?.api?.addJamalOP) throw new Error("addJamalOP is not registered");
+
+  return window.api.addJamalOP(payload);
 }

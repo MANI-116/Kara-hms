@@ -16,7 +16,11 @@
     "bloodPressureDiastolic":{ "type":"string", "nullable":true},
     "bloodPressureSystolic":{ "type":"string", "nullable":true},
     "respiratoryRate":{ "type":"string", "nullable":true},
-    "oxygenSaturation":{ "type":"string", "nullable":true}
+    "oxygenSaturation":{ "type":"string", "nullable":true},
+    "consultationFee":{"type":"number","nullable":false},
+    "paymentMode":{"type":"string","nullable":false},
+    "paymentStatus":{"type":"boolean","nullable":false},
+    "totalAmount":{"type":"number","nullable":false}
   },
   "required": ["fullName", "age", "gender", "contact"],
   "additionalProperties": false

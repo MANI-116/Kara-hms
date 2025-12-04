@@ -168,6 +168,7 @@ export async function getIncomes(){
 
 //append OP to sheets dynamically based on the op name
 export async function appendJamalOP(opPayload:any){
+  const paymentStatus= opPayload.paymentStatus?"paid":"not paid"
 
    const values = [
       [
@@ -188,9 +189,21 @@ export async function appendJamalOP(opPayload:any){
         opPayload.bloodPresuureDiastolic||"",
         opPayload.bloodPressureSystolic,
         opPayload.respiratoryRate||"",
-        opPayload.oxygenSaturation||""
+        opPayload.oxygenSaturation||"",
+        opPayload.totalAmount||"",
+        paymentStatus||"not paid"
+       
       ]
     ];
+    
+    const valuesForIncome={ date: new Intl.DateTimeFormat("us-GB").format(Date.now()),
+     category: "jamalOP",
+     description: `${opPayload.fullName}-jamalOP`,
+      amount:opPayload.totalAmount}
+  
+
+     await appendIncomeToSheets(valuesForIncome);
+
 
     const res = await appendToSheets({values,range:"JamalOPs!A2"})
  
@@ -207,9 +220,9 @@ export async function appendIncomeToSheets(income:any){
       income.description,
       income.amount
   ]]
-
-  await appendToSheets({values,range:"Incomes!A2"})
-
+  console.log("appending income to the sheets:",income);
+  const res = await appendToSheets({values,range:"Incomes!A2"})
+  console.log("response form addIncomeToSheets----",res)
 }
 
 export async function appendExpenseTOSheet(expense:any){

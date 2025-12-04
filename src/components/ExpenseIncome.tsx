@@ -51,6 +51,8 @@ export function ExpenseIncome({ onAddTransaction, transactions }: ExpenseIncomeP
     'Rent',
     'Marketing',
     'Administration',
+    'JamalOP',
+    'JimsOP',
     'Other'
   ];
 
@@ -93,7 +95,7 @@ export function ExpenseIncome({ onAddTransaction, transactions }: ExpenseIncomeP
       amount: '',
       category: '',
       description: '',
-      date: new Date().toISOString().split('T')[0]
+      date: new Intl.DateTimeFormat("us-GB").format(Date.now())
     });
 
     toast.success('Expense added successfully');
@@ -125,7 +127,7 @@ export function ExpenseIncome({ onAddTransaction, transactions }: ExpenseIncomeP
       amount: '',
       category: '',
       description: '',
-      date: new Date().toISOString().split('T')[0]
+      date: Intl.DateTimeFormat("us-GB").format(Date.now())
     });
 
     toast.success('Income added successfully');

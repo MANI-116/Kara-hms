@@ -76,6 +76,10 @@ export function JamalOP() {
     bloodPressureDiastolic:'',
     respiratoryRate:'',
     oxygenSaturation:'',
+    consultationFee:'',
+    paymentMode:'',
+    paymentStatus:false,
+    totalAmount:''
     
     
   });
@@ -113,7 +117,11 @@ export function JamalOP() {
     bloodPressureSystolic:'',
     bloodPressureDiastolic:'',
     respiratoryRate:'',
-    oxygenSaturation:''
+    oxygenSaturation:'',
+    consultationFee:'',
+    paymentMode:'',
+    paymentStatus:false,
+    totalAmount:''
     
   })
 
@@ -129,7 +137,7 @@ export function JamalOP() {
 
     // Check if patient already exists
     try {
-          const res = await createOP({...formData,age:parseInt(formData.age)}).then((res)=>res).catch((err)=>err);
+          const res = await createOP({...formData,age:parseInt(formData.age),consultationFee:parseInt(formData.consultationFee),totalAmount:parseInt(formData.totalAmount)}).then((res)=>res).catch((err)=>err);
           console.log("response from the createOP func:",res)
           if(res.ok){
             //create the pdf
@@ -165,12 +173,20 @@ export function JamalOP() {
                 bloodPressureSystolic:'',
                 bloodPressureDiastolic:'',
                 respiratoryRate:'',
-                oxygenSaturation:''
+                oxygenSaturation:'',
+                consultationFee:'',
+                paymentMode:'',
+                paymentStatus:false,
+                totalAmount:''
                 });
   
 
   
   };
+
+  const handleConsultationFee = (e:any)=>{
+    setFormData({...formData,consultationFee:e.target.value,totalAmount:e.target.value})
+  }
 
 
 
@@ -233,7 +249,7 @@ export function JamalOP() {
                   <Input
                     id="contact"
                     value={formData.contact}
-                    onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+                    onChange={(e)=>{setFormData({...formData,contact:e.target.value})}}
                     placeholder="Enter contact number"
                     required
                   />
@@ -283,7 +299,7 @@ export function JamalOP() {
                 />
               </div>
               <div className="space-y-4">
-              <h3 className="font-medium text-lg">Vital Signs</h3>
+              <h3>Vital Signs</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {defaultVitals.map(({ id, label, placeholder }) => (
                   <div key={id}>
@@ -301,6 +317,50 @@ export function JamalOP() {
                 ))}
               </div>
             </div>
+            <div>
+              <h3>Payment Info</h3>
+              <div>
+                <div>
+                  <Label>Consultation Fee</Label>
+                  <Input type='number'
+                  placeholder={"enter Conultation fee"}
+                  onChange={handleConsultationFee}
+                  />
+                </div>
+                <div>
+                  <Label>Mode</Label>
+                  <Select onValueChange={(value:string)=>setFormData({...formData,paymentMode:value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={"select payment mode"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cash">Cash</SelectItem>
+                      <SelectItem value="upi">UPI</SelectItem>
+                      <SelectItem value="card">Card</SelectItem>
+                      <SelectItem value="other">other..</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Status</Label>
+                  <Select onValueChange={(value:string)=>value==="paid"?setFormData({...formData,paymentStatus:true}):setFormData({...formData,paymentStatus:false})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="setStatus"></SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="paid"> paid</SelectItem>
+                      <SelectItem value="not paid">not Paid</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label>Total Amount: {formData.totalAmount}.00</Label>
+              </div>
+            </div>
+
+          
              
               <div className="flex gap-3 pt-4">
                 <Button type="submit" className="flex-1">

@@ -1,11 +1,4 @@
 import { useState,  } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Button } from './ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Textarea } from './ui/textarea';
-import { UserPlus, Search, Divide } from 'lucide-react';
 import { toast } from 'sonner';
 import {BasePatient, PatientRegistrationProps } from "../types/patient"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -83,19 +76,15 @@ export function OPCreation({ patients, onRegisterPatient, onSelectExistingPatien
       <Tabs>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="jamal-op">
-            jamal op
+            Jamal OP
           </TabsTrigger>
           <TabsTrigger value="jims-op">
-            jimsop
+            Jims OP
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="jamal-op">
-             <JamalOP
-                      patients={[]}
-                      onRegisterPatient={()=>{}}
-                      onSelectExistingPatient={()=>{}}
-                    />
+             <JamalOP/>
         </TabsContent>
         <TabsContent value="jims-op">
           JimsOP

@@ -1,29 +1,95 @@
-import { useState,  } from 'react';
+import { ChangeEvent, useState,  } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
-import { UserPlus, Search } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
-import { registerPatient} from "../lib/ipc"
-import {BasePatient, PatientRegistrationProps } from "../types/patient"
 import { pdf } from "@react-pdf/renderer"
 import { OPPDFDocument} from "./OPPDFTemplate"
 import { addJamalOP } from "../lib/ipc"
 
-const createOP = async (opData:any):Promise<{ok:boolean,data:any}>=>{
+interface Doctor{
+    id:number,
+    name:string
+  }
+
+  type VitalName = "weight"|"height"|"temperature"|"pulse"|"bloodPressureSystolic"|"bloodPressureDiastolic"|"respiratoryRate"|"oxygenSaturation";
+
+  interface Vital {
+    id: VitalName,
+    label:string,
+    placeholder:string
+  }
+
+interface JamalOPForm {
+    fullName: string,
+    age: string,
+    gender: string,
+    contact: string,
+    address: string,
+    bloodGroup: string,
+    assignDoctor:string,
+    weight:string,
+    height:string,
+    temperature:string,
+    pulse:string,
+    bloodPressureSystolic:string,
+    bloodPressureDiastolic:string,
+    respiratoryRate:string,
+    oxygenSaturation:string,
+    consultationFee:string,
+    paymentMode:string,
+    paymentStatus:boolean,
+    totalAmount:string
+
+}
+
+const defaultJamalOPData={
+    fullName: '',
+    age: '',
+    gender: '',
+    contact: '',
+    address: '',
+    bloodGroup: '',
+    assignDoctor:'',
+    weight:'',
+    height:'',
+    temperature:'',
+    pulse:'',
+    bloodPressureSystolic:'',
+    bloodPressureDiastolic:'',
+    respiratoryRate:'',
+    oxygenSaturation:'',
+    consultationFee:'',
+    paymentMode:'',
+    paymentStatus:false,
+    totalAmount:''
+  };
+  const defaultVitals:Vital[]=[
+                  { id: "weight", label: "Weight (kg) *", placeholder: "70.5" },
+                  { id: "height", label: "Height (cm)", placeholder: "170" },
+                  { id: "temperature", label: "Temperature (°C) *", placeholder: "98.6" },
+                  { id: "pulse", label: "Pulse (bpm) *", placeholder: "72" },
+                  { id: "bloodPressureSystolic", label: "BP Systolic *", placeholder: "120" },
+                  { id: "bloodPressureDiastolic", label: "BP Diastolic *", placeholder: "80" },
+                  { id: "respiratoryRate", label: "Respiratory Rate", placeholder: "16" },
+                  { id: "oxygenSaturation", label: "O₂ Saturation (%)", placeholder: "98.0" }
+                ];
+
+const createOP = async (opData:Omit<JamalOPForm,"age"|"consultationFee"|"totalAmount"> & {age:number,consultationFee:number,totalAmount:number}) :Promise<{ok:boolean,data:any}>=>{
     try {
             const result = await addJamalOP(opData);
             console.log("result:",result);
             if(result.ok) {return {ok:true,data:result?.data} }else{
-                return new Promise((res,rej)=>res({ok:false,data:"errorOccured"}));
+                return {ok:false,data:"errorOccured"};
             }
         
     } catch (error) {
         console.error;
-        return new Promise((res,rej)=>rej({ok:false,data:error}));
+        return {ok:false,data:error};
         
     }
     
@@ -60,41 +126,11 @@ const downloadPdf=async (opData:any)=>{
 }
 
 export function JamalOP() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    age: '',
-    gender: '',
-    contact: '',
-    address: '',
-    bloodGroup: '',
-    assignDoctor:'',
-    weight:'',
-    height:'',
-    temperature:'',
-    pulse:'',
-    bloodPressureSystolic:'',
-    bloodPressureDiastolic:'',
-    respiratoryRate:'',
-    oxygenSaturation:'',
-    consultationFee:'',
-    paymentMode:'',
-    paymentStatus:false,
-    totalAmount:''
-    
-    
-  });
-  const defaultVitals=[
-                  { id: "weight", label: "Weight (kg) *", placeholder: "70.5" },
-                  { id: "height", label: "Height (cm)", placeholder: "170" },
-                  { id: "temperature", label: "Temperature (°C) *", placeholder: "98.6" },
-                  { id: "pulse", label: "Pulse (bpm) *", placeholder: "72" },
-                  { id: "bloodPressureSystolic", label: "BP Systolic *", placeholder: "120" },
-                  { id: "bloodPressureDiastolic", label: "BP Diastolic *", placeholder: "80" },
-                  { id: "respiratoryRate", label: "Respiratory Rate", placeholder: "16" },
-                  { id: "oxygenSaturation", label: "O₂ Saturation (%)", placeholder: "98.0" }
-                ];
+  const [formData, setFormData] = useState<JamalOPForm>(defaultJamalOPData);
+  
+  
 
-  const doctorsList = [
+  const doctorsList:Doctor[] = [
     {name:"bhasha", id:0},
     {name:"jessi", id:1},
     {name:"chandra", id:2}
@@ -102,28 +138,7 @@ export function JamalOP() {
 
 
   const handleReset = ()=>{
-    setFormData({
-    fullName: '',
-    age: '',
-    gender: '',
-    contact: '',
-    address: '',
-    bloodGroup: '',
-    assignDoctor:'',
-    weight:'',
-    height:'',
-    temperature:'',
-    pulse:'',
-    bloodPressureSystolic:'',
-    bloodPressureDiastolic:'',
-    respiratoryRate:'',
-    oxygenSaturation:'',
-    consultationFee:'',
-    paymentMode:'',
-    paymentStatus:false,
-    totalAmount:''
-    
-  })
+    setFormData(defaultJamalOPData)
 
   }
   const handleSubmit = async (e: React.FormEvent) => {
@@ -158,33 +173,13 @@ export function JamalOP() {
     
         
     }
-    setFormData({
-                    fullName: '',
-                age: '',
-                gender: '',
-                contact: '',
-                address: '',
-                bloodGroup: '',
-                assignDoctor:'',
-                weight:'',
-                height:'',
-                temperature:'',
-                pulse:'',
-                bloodPressureSystolic:'',
-                bloodPressureDiastolic:'',
-                respiratoryRate:'',
-                oxygenSaturation:'',
-                consultationFee:'',
-                paymentMode:'',
-                paymentStatus:false,
-                totalAmount:''
-                });
+    setFormData(defaultJamalOPData);
   
 
   
   };
 
-  const handleConsultationFee = (e:any)=>{
+  const handleConsultationFee = (e:ChangeEvent<HTMLInputElement>)=>{
     setFormData({...formData,consultationFee:e.target.value,totalAmount:e.target.value})
   }
 

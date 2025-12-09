@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { JamalOP } from './JamalOP';
-
+import { IPPDFPreview} from "./JimsOP"
 
 export function OPCreation() {
   return (
@@ -20,7 +20,7 @@ export function OPCreation() {
              <JamalOP/>
         </TabsContent>
         <TabsContent value="jims-op">
-          JimsOP
+          <IPPDFPreview />
         </TabsContent>
       </Tabs>
          </div>

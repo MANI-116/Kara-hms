@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { PatientManagement } from './components/PatientManagement';
-import { AccountsManagement } from './components/AccountsManagement';
-import { Toaster } from './components/ui/sonner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../packages/ui/src/components/ui/tabs';
+import { PatientManagement } from '../../../packages/ui/src/components/PatientManagement';
+import { AccountsManagement } from '../../../packages/ui/src/components/AccountsManagement';
+import { Toaster } from '../../../packages/ui/src/components/ui/sonner';
 import { Users, Calculator, Hospital } from 'lucide-react';
-
+import { ApiClientProvider } from "../../../packages/ui/apiContext/ApiProvider"
+import { WebApiClient } from './adapters/webAdapter';
 export default function App() {
   return (
     <div className="min-h-screen bg-background">

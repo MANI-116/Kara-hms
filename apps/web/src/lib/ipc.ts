@@ -1,4 +1,5 @@
-//registering patients
+
+const URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com"
 export async function registerPatient(payload: any) {
   if (!window?.api?.registerPatient) throw new Error('IPC not available');
   return window.api.registerPatient(payload);
@@ -8,6 +9,8 @@ export async function getPatients() {
   if (!window?.api?.getPatients) throw new Error('IPC not available');
   return window.api.getPatients();
 }
+
+
 
 export async function searchPatients(term: string) {
   if (!window?.api?.searchPatients) throw new Error('IPC not available');
@@ -92,4 +95,22 @@ export async function addJamalOP(payload:any){
   console.log("data from the response from backend api",data);
 
   return data;
+}
+
+export async function addJimsOP(payload:any) {
+  console.log("payload fromm jimsOP",payload);
+  payload = {...payload,age:parseInt(payload?.age)};
+  const res = await fetch(`${URL}/jimsop/new`,{
+    method:"Post",
+    headers:{
+      "content-type":"application/json",
+      'Access-Control-Allow-Origin':"*"
+    },
+    body:JSON.stringify(payload)
+  }).then((res)=>res.json());
+  console.log("response from addJmalfetch",res);
+
+
+  return res;
+  
 }

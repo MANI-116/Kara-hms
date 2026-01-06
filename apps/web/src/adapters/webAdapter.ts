@@ -17,7 +17,6 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
 }
 
 //Accouunts
-
  async  addExpense(payload:any){
   try {
     console.log("add expense is invoked",payload);

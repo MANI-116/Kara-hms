@@ -1,7 +1,6 @@
 import { google } from "googleapis";
 import path from "path";
 import fs from "fs";
-import { error } from "console";
 
 const SERVICE_ACCOUNT_PATH = path.join(__dirname, "../keys/google-service-account.json");
 

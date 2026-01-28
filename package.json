@@ -2,7 +2,7 @@
       "name": "hms",
       "version": "0.1.0",
       "description": "Run `npm i` to install the dependencies.",
-      "main": "dist-electron/main.js",
+      "main": "",
       "private": true,
       "scripts": {
             "dev": "vite",

@@ -1,6 +1,6 @@
 import { ipcMain } from "electron"
 import Ajv from "ajv";
-import * as jamalOPSchema from "../../../shared/jamalOP.schema.json"
+import * as jamalOPSchema from "../../../../shared/jamalOP.schema.json"
 import { appendJamalOP, getNextOPID} from "../../googleConfig"
 
 ipcMain.handle("op:jamal",async (e,payload)=>{

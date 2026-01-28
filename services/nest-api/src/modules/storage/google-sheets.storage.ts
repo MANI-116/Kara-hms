@@ -31,4 +31,9 @@ export class GoogleSheetsStorage implements DataStorage {
     async addIncome(income: any): Promise<{ ok: boolean; data: any; }> {
         return this.GoogleSheetsService.addIncome(income);
     }
+
+    async findUserByEmail(mailId: string): Promise<{ ok: boolean; data: any; }> {
+        
+        return this.GoogleSheetsService.findUserByEmail(mailId);
+    }
 }

@@ -48,7 +48,25 @@ export class GoogleSheetsService implements DataStorage{
     }
 
   }
+
+async findUserByEmail(mailId: string): Promise<{ ok: boolean; data: any; }> {
+  try {
+
+  const rows:string[][] = await this.getRows({sheetName:"PermissionsSheet"});
+  const userRow = rows.filter((row:string[])=>row[2]===mailId);
+  if(userRow.length === 0) return {ok:false,data:"user not Found"};
+  console.log("userRow:",userRow);
+
+  return { ok:true, data:"user found"};
+    
+  } catch (error) {
+
+    throw new Error(JSON.stringify(Error));
+    
+  }
   
+
+}  
 async  getRows(payload:any){
 
   try {

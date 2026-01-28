@@ -5,4 +5,7 @@ export interface DataStorage{
     getIncomes():Promise<{ok:boolean;data:any}>;
     addExpense(expense:any):Promise<{ok:boolean;data:any}>;
     addIncome(income:any):Promise<{ok:boolean;data:any}>;
+    findUserByEmail(mailId:string):Promise<{ok:boolean;data:any}>
+    storeOtp(payload):Promise<{ok:boolean;data:any}>
+    getOtp(payload):Promise<{ok:boolean;data:any}>
 }

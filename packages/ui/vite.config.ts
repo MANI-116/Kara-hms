@@ -10,12 +10,13 @@ const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(file
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  plugins: [tailwindcss(), react()],
+  plugins: [react(),tailwindcss()],
   base: "./",
   resolve: {
     dedupe:["react","react-dom"],
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
     alias: {
+       '@': path.resolve(__dirname, './src'),
       'vaul@1.1.2': 'vaul',
       'sonner@2.0.3': 'sonner',
       'recharts@2.15.2': 'recharts',
@@ -54,7 +55,7 @@ export default defineConfig({
       '@radix-ui/react-aspect-ratio@1.1.2': '@radix-ui/react-aspect-ratio',
       '@radix-ui/react-alert-dialog@1.1.6': '@radix-ui/react-alert-dialog',
       '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
-      '@': path.resolve(__dirname, './src')
+     
     }
   },
   build: {

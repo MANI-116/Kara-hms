@@ -1,18 +1,18 @@
 import { validate } from "class-validator"
 import { plainToInstance } from "class-transformer"
 import { Injectable, PipeTransform, ArgumentMetadata, UnauthorizedException } from "@nestjs/common"
-import { LoginDto } from "./dto/login.dto";
+import { VerifyOtpDto } from "../dto/verifyOtp.dto"
 
 
 @Injectable()
-export class AuthValidationPipe implements PipeTransform{
+export class VerifyOtpValidationPipe implements PipeTransform{
 
     async transform(value: any, metadata: ArgumentMetadata) {
         //some checks
         if( !metadata.metatype || !this.validateBaseTypes(value) || metadata.type != "body")
             return value;
 
-        const object = plainToInstance(LoginDto,value);
+        const object = plainToInstance(VerifyOtpDto,value);
         console.log(object);
 
         const errors = await validate(object);

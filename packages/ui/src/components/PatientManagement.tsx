@@ -141,32 +141,33 @@ const createIPRecord = async (ipData: any) => {
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="registration" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="registration">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Registration
-          </TabsTrigger>
+      <Tabs defaultValue="op" className="space-y-6">
+        <TabsList className="flex w-full flex-row justify-between ">
+          
           <TabsTrigger value="op">
             <UserPlus className="mr-2 h-4 w-4" />
             OP
-          </TabsTrigger>
-          <TabsTrigger value="ip-creation">
-            <FileText className="mr-2 h-4 w-4" />
-            IP
-          </TabsTrigger>
-          {/* <TabsTrigger value="consultation">
-            <Stethoscope className="mr-2 h-4 w-4" />
-            Consultation
-          </TabsTrigger> */}
-          <TabsTrigger value="admission">
-            <Bed className="mr-2 h-4 w-4" />
-            Admission
           </TabsTrigger>
           <TabsTrigger value="patients">
             <Users className="mr-2 h-4 w-4" />
             Patient List
           </TabsTrigger>
+          {/* <TabsTrigger value="ip-creation">
+            <FileText className="mr-2 h-4 w-4" />
+            IP
+          </TabsTrigger> */
+          /* <TabsTrigger value="consultation">
+            <Stethoscope className="mr-2 h-4 w-4" />
+            Consultation
+          </TabsTrigger> */
+          /* <TabsTrigger value="admission">
+            <Bed className="mr-2 h-4 w-4" />
+            Admission
+          </TabsTrigger> */
+          /* <TabsTrigger value="registration">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Registration
+          </TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="registration">
@@ -178,11 +179,7 @@ const createIPRecord = async (ipData: any) => {
         </TabsContent>
 
         <TabsContent value="op">
-          <OPCreation
-            patients={basePatients}
-            onRegisterPatient={handleRegisterPatient}
-            onSelectExistingPatient={selectExistingPatient}
-          />
+          <OPCreation />
         </TabsContent>
         
 

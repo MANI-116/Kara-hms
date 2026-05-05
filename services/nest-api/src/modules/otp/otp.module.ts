@@ -1,9 +1,11 @@
 import { Module } from "@nestjs/common";
-import { OTPSerivice } from "./otp.service"
+import { OTPService } from "./otp.service"
+import { DataStorageModule } from "../storage/storage.module";
 @Module({
-    providers:[OTPSerivice],
-    exports:[OTPSerivice]
+    imports:[DataStorageModule],
+    providers:[OTPService],
+    exports:[OTPService]
 })
-export class OTPMOdule{
+export class OTPModule{
 
 }

@@ -9,7 +9,7 @@
             "start": "electron ."
       },
       "dependencies": {
-            "@hms/ui":"*",
+            "@hms/ui": "*",
             "@radix-ui/react-accordion": "^1.2.3",
             "@radix-ui/react-alert-dialog": "^1.1.6",
             "@radix-ui/react-aspect-ratio": "^1.1.2",
@@ -36,6 +36,7 @@
             "@radix-ui/react-toggle": "^1.1.2",
             "@radix-ui/react-toggle-group": "^1.1.2",
             "@radix-ui/react-tooltip": "^1.1.8",
+            "@radix-ui/themes": "^3.3.0",
             "@react-pdf/renderer": "^4.3.1",
             "@tailwindcss/vite": "^4.1.17",
             "ajv": "^8.17.1",

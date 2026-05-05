@@ -27,5 +27,8 @@
       "bugs": {
             "url": "https://github.com/MANI-116/HospitalManagement/issues"
       },
-      "homepage": "https://github.com/MANI-116/HospitalManagement#readme"
+      "homepage": "https://github.com/MANI-116/HospitalManagement#readme",
+      "dependencies": {
+            "@radix-ui/react-icons": "^1.3.2"
+      }
 }

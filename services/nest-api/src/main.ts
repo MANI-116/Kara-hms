@@ -1,11 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-
+import cookieParser from "cookie-parser";
 import express from 'express';
 import { logger } from './logger/logger';
 import {LoggerInterceptor } from "./logger/logger.interceptor"
-
+import { AuthorizationGuard } from './modules/auth/guards/authorization.guard';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 
 async function bootstrapServer() {
@@ -26,8 +27,12 @@ async function bootstrapServer() {
     origin: true,
     credentials: true,
   });
+  app.use(cookieParser());
   app.useGlobalInterceptors(new LoggerInterceptor());
-  await app.listen(3000,()=>console.log(`app is running on 5127`))
+  
+
+  
+  await app.listen(3000,()=>console.log(`app is running on 3000`))
   
 }
 bootstrapServer();

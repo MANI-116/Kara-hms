@@ -3,7 +3,6 @@ import type { EmailProviderInterface, SMSProviderInterface} from "./providers/in
 import { EmailService } from "./providers/email.service";
 import { NotificationManager } from "./notification.manager";
 @Module({
-    imports:[],
     providers:[NotificationManager,EmailService],
     exports:[NotificationManager]
 

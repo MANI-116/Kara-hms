@@ -5,12 +5,17 @@ import path from 'path';
 import tailwindcss from '@tailwindcss/vite'
 
   export default defineConfig({
-    plugins: [tailwindcss(),react()],
+    plugins: [react(),
+      tailwindcss({ 
+      content: ["./index.html",
+        "./src/**/*.{ts,tsx}",
+        "../../packages/ui/src/**/*.{ts,tsx}" 
+      ],})
+    ],
     base:"./",
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
-         "@acme/ui": path.resolve(__dirname, "../../packages/src"),
         'vaul@1.1.2': 'vaul',
         'sonner@2.0.3': 'sonner',
         'recharts@2.15.2': 'recharts',
@@ -48,8 +53,8 @@ import tailwindcss from '@tailwindcss/vite'
         '@radix-ui/react-avatar@1.1.3': '@radix-ui/react-avatar',
         '@radix-ui/react-aspect-ratio@1.1.2': '@radix-ui/react-aspect-ratio',
         '@radix-ui/react-alert-dialog@1.1.6': '@radix-ui/react-alert-dialog',
-        '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion',
-        '@': path.resolve(__dirname, './src'),
+        '@radix-ui/react-accordion@1.2.3': '@radix-ui/react-accordion', 
+        "@": path.resolve(__dirname, "../../packages/ui/src")
       },
     },
     build: {
@@ -59,5 +64,6 @@ import tailwindcss from '@tailwindcss/vite'
     server: {
       port: 5173,
       open: true,
+      host:true
     },
   });

@@ -6,7 +6,7 @@ export function OPCreation() {
   return (
     <div className="space-y-6">
       {/* Search Existing Patients */}
-      <Tabs>
+      <Tabs defaultValue="jamal-op">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="jamal-op">
             Jamal OP

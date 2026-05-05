@@ -1,45 +1,10 @@
-import { Injectable,Inject } from "@nestjs/common";
+import { Injectable,Inject,OnModuleInit } from "@nestjs/common";
 import bcrypt from "bcrypt";
 import { DataStorage as Data_Storage_Token } from "../storage/storage.token";
 import type { DataStorage } from "../storage/storage.interface";
 
-@Injectable()
-export class OTPSerivice{
 
-    constructor(@Inject(Data_Storage_Token)private dataStorage:DataStorage){}
-
-    async generateOtp(email){
-        //6- digit number
-        
-        const otp =Math.floor(100000+ Math.random() *900000).toString();
-
-        const hash:string = await bcrypt.hash(otp,10);
-        //store otp in the sheets:
-        await this.dataStorage.storeOtp({email,hash});
-
-        return { ok:true,data:{otpHash:hash}}
-        
-
-    }
-
-    async verifyOtp(email:string,clientOtp){
-        
-        //get the otp from datastorage
-        const hashedOtp = await this.dataStorage.getOtp(email);
-        const result = await bcrypt.compare(clientOtp,hashedOtp);
-        if(!result) return false;
-
-        return true;
-
-    }
-
-
-}
-
-class OTP {
-
-    /*
-
+/*
     storage:
         -otp is connected to client-id
         -login we use jwt which is also related to the client ID
@@ -54,53 +19,86 @@ class OTP {
         -time limit till 30 min for the otp
 
     */
-    //4-digit string
-   private code : string 
 
-   //otp Issued date and time
-   private issued: Date
-
-   //validity of otp
-  // private const valid = 30
-
-   //number of times tried the otp
-   private  tries = 3
-
-   //if tries are completed we need to freeze the account for 3 hrs
-
-
-   constructor(){
-
-    //generates otp number 
-    this.generateOTP();
-    //set issued date
-    this.issued = new Date();
-   }
-
-   generateOTP(){
-
-    let otp = "";
-    for( let i =0;i < 4;i++){
-        otp += Math.floor(Math.random() *10);
-    }
-    this.code = otp;
- 
-
-   }
-
-
-   verify(otp:string):boolean{
-    //verfy the time limit 
-     
-    if(this.code === otp) return true;
-    
-    this.tries--;
-    if( this.tries === 0 ){
+@Injectable()
+export class OTPService implements OnModuleInit{
+    private cache = new Map<string,any>();
+    constructor(@Inject(Data_Storage_Token)private dataStorage:DataStorage){
         
     }
-    return false;
+    async onModuleInit() {
+        const rows = await this.dataStorage.getOtpSheetDetails();
+        console.log("loading otp cache")
 
+        for(const row of rows){
+            const otp = JSON.stringify(row[1]);
+            const email = row[0];
+            this.cache.set(email,otp);
+        }
+        console.log(`otp cache loaded with ${this.cache.size}`)
+        
+    }
+
+    async generateOtp(email){
+        //6- digit number
+        
+        const otpNumber = Math.floor(100000+ Math.random() *900000).toString();
+
+        const otpHash:string = await bcrypt.hash(otpNumber,10);
+        //store otp in the sheets:
+        const otp = new OTP(email,
+            otpHash,
+            Date.now(),
+            3,
+            0,
+            "active")
+        await this.dataStorage.storeOtp(otp);
+        this.cache.set(email,otp);
+
+        return { ok:true,data:{otpNumber}}
+        
+
+    }
+
+    async verifyOtp(email:string,clientOtp){
+
+        try {
+             //get the otp from datastorage
+        const res = await this.dataStorage.getOtp({email});
+        const otp = JSON.parse(res.data)
+        console.log(otp);
+        const hashedOtp = otp.otpHash;
+
+        console.log("hshed otp fethed",hashedOtp);
+        const result = await bcrypt.compare(clientOtp.toString(),hashedOtp);
+        console.log("is matched otps-",result)
+        if(!result) return {ok:false,error:"otp does not match"};
+
+        return {ok:true, data:"otp matched succesfully"};
+        } catch (error) {
+            console.log(error);
+            return {ok:false,error}
+            
+        }
+        
+       
+
+    }
+
+
+}
+
+
+
+class OTP {
+  
+   constructor(public email:string,
+    public otpHash:string,
+    public issuedAt:number,
+    public attemptsLeft:number,
+    public lastRequested:number,
+    public status:string){
+    
    }
-
 
 }

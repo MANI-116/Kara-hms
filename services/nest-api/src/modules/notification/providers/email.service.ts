@@ -5,16 +5,21 @@ import type { EmailProviderInterface, EmailPayload } from "./interfaces"
 @Injectable()
 export class EmailService implements EmailProviderInterface{
     
+    
+    
  private transporter = nm.createTransport({
     service:"gmail",
     auth: {
         user: "111manikanta.v@gmail.com",
-        pass:process.env.GMAIL_APP_PASSWORD
+        pass:process.env.GOOGLE_APP_PASSCODE
     }
  })
 
  async send({to, subject, html}:EmailPayload){
-     const info = await this.transporter.sendEmail({
+    console.log("app-pass",process.env.GOOGLE_APP_PASSCODE)
+    console.log("transporter",this.transporter)
+    
+     const info = await this.transporter.sendMail({
         from:"111manikanta.v@gmail.com",
         to,
         subject,

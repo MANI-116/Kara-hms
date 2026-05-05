@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import path from "path";
 import { google } from "googleapis";
-import { DataStorage } from "../storage/storage.interface";
+import { DataStorage, OTP } from "../storage/storage.interface";
 import { logger } from "../../logger/logger";
+import { permission } from "process";
 
 @Injectable()
 export class GoogleSheetsService implements DataStorage{
@@ -52,12 +52,18 @@ export class GoogleSheetsService implements DataStorage{
 async findUserByEmail(mailId: string): Promise<{ ok: boolean; data: any; }> {
   try {
 
-  const rows:string[][] = await this.getRows({sheetName:"PermissionsSheet"});
+  const rows:string[][] = await this.getRows({sheetName:"Employees"});
   const userRow = rows.filter((row:string[])=>row[2]===mailId);
   if(userRow.length === 0) return {ok:false,data:"user not Found"};
   console.log("userRow:",userRow);
+  const userData = {
+    id:userRow[0][0]+1,
+    name:userRow[0][1],
+    permissions:userRow[0][3].slice(1,-1).split(","),
+    role:userRow[0][4]
+  }
 
-  return { ok:true, data:"user found"};
+  return { ok:true, data:userData};
     
   } catch (error) {
 
@@ -92,6 +98,7 @@ async  getRows(payload:any){
     async getOpId(sheetName:"JamalConfig" | "JimsConfig"):Promise<{ok:boolean,data:string}>{
          
       try {
+        
            
             const res  = await this.sheets.spreadsheets.values.get({
               spreadsheetId:this.SPREADSHEET_ID,
@@ -231,6 +238,78 @@ async addIncome(income:any){
   }
 
 
+}
+
+async getOtpSheetDetails(){
+
+  try {
+    const response = await this.getRows({sheetName:"LoginDetails"})
+    console.log("response from the getotpdetails",response);
+    return response;
+  } catch (error) {
+    console.log(error);
+    
+  }
+}
+
+async getOtp(payload: any): Promise<{ ok: boolean; data: any; }> {
+   let otp ="";
+  const rows = await this.getOtpSheetDetails();
+ 
+  for (let row=0;row < rows.length;row++){
+    console.log("row-",row,"row-values",rows[row],"email-",payload.email)
+    
+    if(rows[row][0] === payload.email){
+      otp = rows[row][1];
+      break;
+
+    }
+
+  }
+  console.log(otp);
+console.log("returning otp from sheets-",otp)
+  
+  return {ok:true,data:otp}
+}
+
+async updateCell(cell:string,value){
+
+  try{
+    console.log("values in sheets......",this.sheets.spreadsheets.values.update);
+
+    const result = await this.sheets.spreadsheets.values.update({
+    range:cell,
+    spreadsheetId:this.SPREADSHEET_ID,
+    valueInputOption:"USER_ENTERED",
+    requestBody:{
+      values:[[value]]
+    }
+  })
+
+}catch(error){
+  console.log("error while updating",error);
+}
+  return false;
+}
+
+async storeOtp(payload: OTP): Promise<{ ok: boolean; data: any; }> {
+ //get the row and column number:
+
+ //assuming the email must be present
+ const cellDetails = await this.getOtpDetailsByEmail(payload.email);
+console.log("storing otp to sheets-",payload)
+ const result = await this.updateCell(cellDetails,JSON.stringify(payload));
+
+console.log("result:",result);
+  
+  return {ok:true,data:"stored successfully"}
+}
+async getOtpDetailsByEmail(email:string){
+
+  //cached
+
+  //not cached
+  return "LoginDetails!B2:B2"
 }
       
 }

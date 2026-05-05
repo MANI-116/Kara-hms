@@ -8,6 +8,9 @@ export interface ApiClient{
     getExpenses():Promise<any>
     addJamalOP(payload:any):Promise<any>
     addJimsOP(payload:any):Promise<any>
+    login({mailId:string}):Promise<any>
+    verifyOtp({mailId:string,otp:number}):Promise<any>
+    getMe():Promise<any>
 
 }
 

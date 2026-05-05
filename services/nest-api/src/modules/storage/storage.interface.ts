@@ -6,6 +6,19 @@ export interface DataStorage{
     addExpense(expense:any):Promise<{ok:boolean;data:any}>;
     addIncome(income:any):Promise<{ok:boolean;data:any}>;
     findUserByEmail(mailId:string):Promise<{ok:boolean;data:any}>
-    storeOtp(payload):Promise<{ok:boolean;data:any}>
+    storeOtp(payload:OTP):Promise<{ok:boolean;data:any}>
     getOtp(payload):Promise<{ok:boolean;data:any}>
+    getOtpSheetDetails()
+}
+
+export class OTP {
+  
+   constructor(public email:string,
+    public otpHash:string,
+    public issuedAt:number,
+    public attemptsLeft:number,
+    public lastRequested:number,
+    public status:string){
+    
+   }
 }

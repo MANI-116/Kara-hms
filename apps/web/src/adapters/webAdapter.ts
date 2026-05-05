@@ -1,8 +1,10 @@
 import { ApiClient } from "../../../../packages/apiClient/apiclient"
 
 export class WebApiClient implements ApiClient{
+  private BACKEND_URL = "http://localhost:3000"
     
-private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
+//private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
+private AWS_URL="http://localhost:3000"
  async  registerPatient(payload: any) {
   
 }
@@ -33,9 +35,12 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
   console.log("patyload to backend",payload);
  const res = await fetch(`${this.AWS_URL}/accounts/addExpense`,{
   method:"POST",
+   credentials:"include",
   headers:{
     "content-type":"applicaction/json",
-    "access-control-allow-origin":"*"},
+    "access-control-allow-origin":"*"
+   
+  },
   body:JSON.stringify(payload)}).then((res)=>res.json());
  console.log("rsponse from backend",res);
  return res;
@@ -65,6 +70,7 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
   
  const data = await fetch(`${this.AWS_URL}/accounts/addIncome`,{
   method:"POST",
+  credentials:"include",
   headers:{
     "content-type":"application/json",
     "access-control-allow-origin":"*"
@@ -76,7 +82,7 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
 
  async  getIncomes(){
   console.log("get incomes invoked")
-  const data = await fetch(`${this.AWS_URL}/accounts/getIncomes`).then((res)=>res.json());
+  const data = await fetch(`${this.AWS_URL}/accounts/getIncomes`,{credentials:"include"}).then((res)=>res.json());
   console.log("data from getIncomes",data)
   
   return data;
@@ -85,7 +91,7 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
  async  getExpenses(){
   
   console.log("getExpenses invoked");
-  const data = await fetch(`${this.AWS_URL}/accounts/getExpenses`).then((res)=>res.json());
+  const data = await fetch(`${this.AWS_URL}/accounts/getExpenses`,{credentials:"include"}).then((res)=>res.json());
   console.log("data from getexpenses-",data);
   return data;
 }
@@ -96,6 +102,7 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
 
  const data =  await fetch(`${this.AWS_URL}/jamalop/new`,{
     method:"POST",
+    credentials:"include",
     headers:{
       "content-type":"application/json",
       "access-control-allow-origin":"*"
@@ -113,9 +120,10 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
   payload = {...payload,age:parseInt(payload?.age)};
   const res = await fetch(`${this.AWS_URL}/jimsop/new`,{
     method:"POST",
+    credentials:"include",
     headers:{
       "content-type":"application/json",
-      'Access-Control-Allow-Origin':"*"
+      'Access-Control-Allow-Origin':"*",
     },
     body:JSON.stringify(payload)
   }).then((res)=>res.json());
@@ -123,6 +131,82 @@ private AWS_URL = "https://t2f8yampxe.execute-api.ap-south-1.amazonaws.com";
 
 
   return res;
+  
+}
+
+async login({ mailId }: { mailId: any; }): Promise<any> {
+  try {
+        
+  const response = await fetch(`${this.BACKEND_URL}/auth/login`,{
+    method:"POST",
+    credentials:"include",
+    headers:{
+      "content-type":"application/json",
+      'Access-Control-Allow-Origin':"*",
+    },
+    body:JSON.stringify({mailId})
+  }).then((res)=>res.json());
+  console.log("response from login",response);
+
+  if(response.ok) return  true;
+
+  return false;    
+  } catch (error) {
+    console.log("error in login",error);
+    
+  }
+
+  
+}
+async getMe(){
+
+  try {
+    
+    const response = await fetch(`${this.BACKEND_URL}/auth/me`,
+      { method:"GET",
+        credentials:"include",
+        headers:{
+       'Access-Control-Allow-Origin':"*"}}).then((res)=>res.json());
+    console.log("respone from getMe adapter",response);
+    if(response.error){
+      throw new Error(response.error);
+    }
+    if(response.ok){
+      console.log("response from the me",response.data);
+      return {ok:true,data:response.data};
+    }
+  } catch (error) {
+    console.log("error in me", error);
+    return { ok:false,error:"unable to fetch"}
+    
+  }
+}
+
+
+
+async verifyOtp({ mailId, otp }: { mailId: any; otp: any; }): Promise<any> {
+
+  try {
+    const response = await fetch(`${this.BACKEND_URL}/auth/verifyOtp`,{
+      method:"POST",
+      credentials:"include",
+      headers:{
+        "content-type":"application/json",
+        "Access-Control-Allow-Origin":"*",
+      },
+      body:JSON.stringify({mailId,otp}),
+    }).then((res)=>res.json());
+
+    console.log("response from verify otp",response);
+    if(response.ok) return true;
+     return false;
+  } catch (error) {
+    console.log("error in verifying otp",error);
+    return false;
+    
+  }
+
+  
   
 }
 

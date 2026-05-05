@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { GoogleSheetsService,} from "../sheets/sheets.service";
-import { DataStorage } from "./storage.interface";
+import { DataStorage, OTP } from "./storage.interface";
 
 
 @Injectable()
@@ -35,5 +35,16 @@ export class GoogleSheetsStorage implements DataStorage {
     async findUserByEmail(mailId: string): Promise<{ ok: boolean; data: any; }> {
         
         return this.GoogleSheetsService.findUserByEmail(mailId);
+    }
+    async storeOtp(payload: OTP): Promise<{ ok: boolean; data: any; }> {
+        return this.GoogleSheetsService.storeOtp(payload);
+        
+    }
+    async getOtp(payload: any): Promise<{ ok: boolean; data: any; }> {
+        return this.GoogleSheetsService.getOtp(payload);
+        
+    }
+    async getOtpSheetDetails() {
+        return this.GoogleSheetsService.getOtpSheetDetails();
     }
 }

@@ -1,5 +1,0 @@
-{
-  "googleSheets": {
-    "serviceAccountKeyPath": "./electron/keys/google-service-account.json"
-  }
-}

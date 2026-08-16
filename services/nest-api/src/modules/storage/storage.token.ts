@@ -1,0 +1,1 @@
+export const DataStorage = Symbol("DataStorage")

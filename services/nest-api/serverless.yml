@@ -1,0 +1,49 @@
+service: jamalop-api
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-south-1
+  stage: dev
+  environment:
+    NODE_ENV: development
+
+custom:
+  dotenv:
+    path: '.env.google'
+
+functions:
+  api:
+    handler: src/lambda.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+plugins:
+  - serverless-dotenv-plugin
+
+build:
+  esbuild:
+    bundle: true
+    minify: false
+    sourcemap: true
+    target: node18
+    platform: node
+    external:
+      - aws-sdk
+      - class-validator
+      - class-transformer
+      - '@nestjs/platform-socket.io'
+      - '@nestjs/microservices'
+      - '@nestjs/websockets'
+      - kafkajs
+      - nats
+      - mqtt
+      - ioredis
+      - amqplib
+      - amqp-connection-manager
+      - '@grpc/grpc-js'
+      - '@grpc/proto-loader'
+

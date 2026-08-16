@@ -7,3 +7,5 @@ dist-electron/
 
 #secrets
 google-service-account.json
+*storybook.log
+storybook-static
